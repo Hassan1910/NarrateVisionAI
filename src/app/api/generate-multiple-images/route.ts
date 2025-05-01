@@ -30,6 +30,10 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    console.log(`Generating images in ${isVercelEnvironment ? 'Vercel' : 'local'} environment`);
+    console.log(`API Key available: ${API_KEY ? 'Yes' : 'No'}`);
+    console.log(`Temporary directory: ${TMP_DIR}`);
+
     // Parse request body
     const body = await request.json();
     const { prompts, style } = body;
@@ -50,6 +54,15 @@ export async function POST(request: NextRequest) {
           // Try OpenAI API first
           try {
             console.log(`Generating image ${index + 1} with OpenAI API for prompt: "${prompt.substring(0, 50)}..."`);
+            console.log(`Using API key: ${API_KEY ? 'Available' : 'Not available'}`);
+
+            // Validate API key
+            if (!API_KEY) {
+              throw new Error('OpenAI API key is not configured');
+            }
+
+            // Add more detailed logging
+            console.log(`Making request to OpenAI API for image ${index + 1}`);
 
             const openaiResponse = await axios.post(
               OPENAI_API_URL,
@@ -65,7 +78,7 @@ export async function POST(request: NextRequest) {
                   'Authorization': `Bearer ${API_KEY}`,
                   'Content-Type': 'application/json',
                 },
-                timeout: 30000 // 30 second timeout
+                timeout: 60000 // 60 second timeout (increased from 30s)
               }
             );
 
@@ -128,13 +141,75 @@ export async function POST(request: NextRequest) {
             }
           } catch (openaiError: any) {
             console.warn(`OpenAI API error for image ${index + 1}:`, openaiError.message);
-            throw openaiError; // Re-throw to be caught by the outer catch
+
+            // Try Zero2Launch API as fallback
+            try {
+              console.log(`Falling back to Zero2Launch API for image ${index + 1}`);
+
+              const zero2launchResponse = await axios.post(
+                ZERO2LAUNCH_API_URL,
+                {
+                  prompt: prompt,
+                  width: 1024,
+                  height: 768
+                },
+                {
+                  headers: {
+                    'X-API-Key': API_KEY,
+                    'Content-Type': 'application/json',
+                  },
+                  responseType: 'arraybuffer',
+                  timeout: 60000
+                }
+              );
+
+              // Get image data from response
+              const imageBuffer = Buffer.from(zero2launchResponse.data);
+              console.log(`Successfully generated image ${index + 1} from Zero2Launch API (${imageBuffer.length} bytes)`);
+
+              // Generate a unique filename for the image
+              const imageFilename = `image-${uuidv4()}.jpg`;
+              const imagePath = path.join(TMP_DIR, imageFilename);
+
+              // Write to the temporary directory (this should work in Vercel)
+              fs.writeFileSync(imagePath, imageBuffer);
+
+              // Variables to store paths and URLs
+              let publicImagePath = '';
+              let imageUrl = '';
+
+              if (!isVercelEnvironment) {
+                // In non-Vercel environments, also save to public directory
+                publicImagePath = path.join(PUBLIC_IMAGES_DIR, imageFilename);
+                fs.writeFileSync(publicImagePath, imageBuffer);
+
+                // Public URL for the image in non-Vercel environments
+                imageUrl = `/media/images/${imageFilename}`;
+              } else {
+                // For Vercel, we'll use the API route to serve the file from the temporary directory
+                imageUrl = `/api/images/${imageFilename}`;
+              }
+
+              return {
+                success: true,
+                imagePath,
+                imageUrl,
+                publicPath: publicImagePath,
+                prompt,
+                size: imageBuffer.length,
+                source: 'zero2launch'
+              };
+            } catch (zero2launchError: any) {
+              console.warn(`Zero2Launch API error for image ${index + 1}:`, zero2launchError.message);
+              throw new Error(`All image generation APIs failed: ${openaiError.message}, ${zero2launchError.message}`);
+            }
           }
         } catch (error: any) {
           console.error(`Error generating image ${index + 1}:`, error.message);
 
           // Use a placeholder image as fallback
-          const placeholderPath = path.join(process.cwd(), 'public', 'placeholder.jpg');
+          console.log(`Using placeholder image for segment ${index + 1}`);
+          const placeholderPath = path.join(process.cwd(), 'public', 'placeholder.svg');
           let imageBuffer;
 
           if (fs.existsSync(placeholderPath)) {
@@ -155,7 +230,8 @@ export async function POST(request: NextRequest) {
           }
 
           // Generate a unique filename for the placeholder image
-          const imageFilename = `placeholder-${uuidv4()}.jpg`;
+          const extension = fs.existsSync(placeholderPath) ? '.svg' : '.jpg';
+          const imageFilename = `placeholder-${uuidv4()}${extension}`;
           const imagePath = path.join(TMP_DIR, imageFilename);
 
           // Write to the temporary directory (this should work in Vercel)
@@ -189,6 +265,12 @@ export async function POST(request: NextRequest) {
         }
       })
     );
+
+    // Log the results
+    console.log(`Generated ${imageResults.length} images`);
+    imageResults.forEach((result, index) => {
+      console.log(`Image ${index + 1}: ${result.success ? 'Success' : 'Failed'}, URL: ${result.imageUrl}`);
+    });
 
     return NextResponse.json({
       success: true,
