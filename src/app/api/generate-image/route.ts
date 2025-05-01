@@ -13,12 +13,22 @@ const OPENAI_API_URL = 'https://api.openai.com/v1/images/generations';
 // Fallback API endpoint if needed
 const ZERO2LAUNCH_API_URL = 'https://api.zero2launch.com/download-image/data';
 
-// Ensure directories exist
-[TMP_DIR, PUBLIC_IMAGES_DIR].forEach(dir => {
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
+// Check if we're running in Vercel environment
+const isVercelEnvironment = process.env.VERCEL === '1';
+
+// Ensure TMP_DIR exists (this should be writable in Vercel)
+if (!fs.existsSync(TMP_DIR)) {
+  fs.mkdirSync(TMP_DIR, { recursive: true });
+}
+
+// Only try to create PUBLIC_IMAGES_DIR if we're not in Vercel (it's read-only in Vercel)
+if (!isVercelEnvironment) {
+  if (!fs.existsSync(PUBLIC_IMAGES_DIR)) {
+    fs.mkdirSync(PUBLIC_IMAGES_DIR, { recursive: true });
   }
-});
+}
+
+// Directory creation is handled above
 
 export async function POST(request: NextRequest) {
   try {
@@ -129,34 +139,46 @@ export async function POST(request: NextRequest) {
     }
 
     try {
-      // Save image to both temporary and public directories
+      // Generate a unique filename for the image
       const imageFilename = `image-${uuidv4()}.jpg`;
       const imagePath = path.join(TMP_DIR, imageFilename);
-      const publicImagePath = path.join(PUBLIC_IMAGES_DIR, imageFilename);
 
-      // Ensure directories exist
+      // Ensure the temporary directory exists
       if (!fs.existsSync(path.dirname(imagePath))) {
         fs.mkdirSync(path.dirname(imagePath), { recursive: true });
       }
 
-      if (!fs.existsSync(path.dirname(publicImagePath))) {
-        fs.mkdirSync(path.dirname(publicImagePath), { recursive: true });
-      }
-
-      // Write to both locations
+      // Write to the temporary directory (this should work in Vercel)
       fs.writeFileSync(imagePath, imageBuffer);
-      fs.writeFileSync(publicImagePath, imageBuffer);
+      console.log(`Image saved to temporary path: ${imagePath}`);
 
-      console.log(`Image saved to: ${publicImagePath}`);
+      // In non-Vercel environments, also save to public directory
+      let publicImagePath = '';
+      let imageUrl = '';
 
-      // Public URL for the image - use a simpler path that's guaranteed to work
-      const imageUrl = `/media/images/${imageFilename}`;
+      if (!isVercelEnvironment) {
+        publicImagePath = path.join(PUBLIC_IMAGES_DIR, imageFilename);
+
+        if (!fs.existsSync(path.dirname(publicImagePath))) {
+          fs.mkdirSync(path.dirname(publicImagePath), { recursive: true });
+        }
+
+        fs.writeFileSync(publicImagePath, imageBuffer);
+        console.log(`Image also saved to public path: ${publicImagePath}`);
+
+        // Public URL for the image in non-Vercel environments
+        imageUrl = `/media/images/${imageFilename}`;
+      } else {
+        // For Vercel, we'll use the API route to serve the file from the temporary directory
+        imageUrl = `/api/images/${imageFilename}`;
+      }
 
       return NextResponse.json({
         success: true,
         imagePath,
         imageUrl,
-        publicPath: publicImagePath
+        publicPath: publicImagePath,
+        isVercelEnvironment
       });
     } catch (saveError) {
       console.error('Error saving image:', saveError);

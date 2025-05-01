@@ -23,12 +23,20 @@ export const VOICE_OPTIONS = [
   'shimmer'   // Crisp, higher-pitched voice
 ];
 
-// Ensure directories exist
-[TMP_DIR, PUBLIC_AUDIO_DIR].forEach(dir => {
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
+// Check if we're running in Vercel environment
+const isVercelEnvironment = process.env.VERCEL === '1';
+
+// Ensure TMP_DIR exists (this should be writable in Vercel)
+if (!fs.existsSync(TMP_DIR)) {
+  fs.mkdirSync(TMP_DIR, { recursive: true });
+}
+
+// Only try to create PUBLIC_AUDIO_DIR if we're not in Vercel (it's read-only in Vercel)
+if (!isVercelEnvironment) {
+  if (!fs.existsSync(PUBLIC_AUDIO_DIR)) {
+    fs.mkdirSync(PUBLIC_AUDIO_DIR, { recursive: true });
   }
-});
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -116,34 +124,44 @@ export async function POST(request: NextRequest) {
     }
 
     try {
-      // Save audio to both temporary and public directories
+      // Generate a unique filename for the audio
       const audioFilename = `audio-${uuidv4()}.mp3`;
       const audioPath = path.join(TMP_DIR, audioFilename);
-      const publicAudioPath = path.join(PUBLIC_AUDIO_DIR, audioFilename);
 
-      // Ensure directories exist
+      // Ensure the temporary directory exists
       if (!fs.existsSync(path.dirname(audioPath))) {
         fs.mkdirSync(path.dirname(audioPath), { recursive: true });
       }
 
-      if (!fs.existsSync(path.dirname(publicAudioPath))) {
-        fs.mkdirSync(path.dirname(publicAudioPath), { recursive: true });
+      // Write to the temporary directory (this should work in Vercel)
+      fs.writeFileSync(audioPath, buffer);
+      console.log(`Audio saved to temporary path: ${audioPath}`);
+
+      // In non-Vercel environments, also save to public directory
+      let publicAudioPath = '';
+      if (!isVercelEnvironment) {
+        publicAudioPath = path.join(PUBLIC_AUDIO_DIR, audioFilename);
+
+        if (!fs.existsSync(path.dirname(publicAudioPath))) {
+          fs.mkdirSync(path.dirname(publicAudioPath), { recursive: true });
+        }
+
+        fs.writeFileSync(publicAudioPath, buffer);
+        console.log(`Audio also saved to public path: ${publicAudioPath}`);
       }
 
-      // Write to both locations
-      fs.writeFileSync(audioPath, buffer);
-      fs.writeFileSync(publicAudioPath, buffer);
-
-      console.log(`Audio saved to: ${publicAudioPath}`);
-
-      // Public URL for the audio - use a simpler path that's guaranteed to work
-      const audioUrl = `/media/audio/${audioFilename}`;
+      // For Vercel, we'll use the API route to serve the file from the temporary directory
+      // For local development, we can use the public directory
+      const audioUrl = isVercelEnvironment
+        ? `/api/audio/${audioFilename}`
+        : `/media/audio/${audioFilename}`;
 
       return NextResponse.json({
         success: true,
         audioPath,
         audioUrl,
-        publicPath: publicAudioPath
+        publicPath: publicAudioPath,
+        isVercelEnvironment
       });
     } catch (saveError: any) {
       console.error('Error saving audio:', saveError);

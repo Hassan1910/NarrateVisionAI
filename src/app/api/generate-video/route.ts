@@ -9,12 +9,20 @@ import { generateSequenceVideo } from '@/utils/sequence-ffmpeg';
 const OUTPUT_DIR = process.env.VIDEO_OUTPUT_DIR || '/tmp/videos';
 const PUBLIC_VIDEOS_DIR = path.join(process.cwd(), 'public', 'media', 'videos');
 
-// Initialize directories
-[OUTPUT_DIR, PUBLIC_VIDEOS_DIR].forEach(dir => {
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
+// Check if we're running in Vercel environment
+const isVercelEnvironment = process.env.VERCEL === '1';
+
+// Ensure OUTPUT_DIR exists (this should be writable in Vercel)
+if (!fs.existsSync(OUTPUT_DIR)) {
+  fs.mkdirSync(OUTPUT_DIR, { recursive: true });
+}
+
+// Only try to create PUBLIC_VIDEOS_DIR if we're not in Vercel (it's read-only in Vercel)
+if (!isVercelEnvironment) {
+  if (!fs.existsSync(PUBLIC_VIDEOS_DIR)) {
+    fs.mkdirSync(PUBLIC_VIDEOS_DIR, { recursive: true });
   }
-});
+}
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
@@ -73,83 +81,136 @@ export async function POST(request: NextRequest) {
     }
 
     try {
-      // Ensure public directory exists
-      if (!fs.existsSync(PUBLIC_VIDEOS_DIR)) {
-        fs.mkdirSync(PUBLIC_VIDEOS_DIR, { recursive: true });
-      }
+      // Handle the video file
+      const videoFilename = path.basename(videoPath);
 
-      // For public access, copy to public directory
-      const publicVideoFilename = path.basename(videoPath);
-      const publicVideoPath = path.join('media/videos', publicVideoFilename);
-      const fullPublicPath = path.join(PUBLIC_VIDEOS_DIR, publicVideoFilename);
-
-      // Ensure image directory exists
-      const publicImagesDir = path.join(process.cwd(), 'public', 'media', 'images');
-      if (!fs.existsSync(publicImagesDir)) {
-        fs.mkdirSync(publicImagesDir, { recursive: true });
-      }
-
-      // Handle multiple images or single image
+      // Variables to store paths and URLs
+      let publicVideoPath = '';
+      let videoUrl = '';
       const imagePathsToCleanup: string[] = [];
       let primaryImagePath = '';
       let primaryImageUrl = '';
       const publicImageUrls: string[] = [];
 
-      // Process images - either multiple or single
-      if (imagePaths && Array.isArray(imagePaths) && imagePaths.length > 0) {
-        // Handle multiple images
-        for (const imgPath of imagePaths) {
-          const publicImageFilename = `img-${uuidv4()}${path.extname(imgPath)}`;
+      // In non-Vercel environments, copy files to public directory
+      if (!isVercelEnvironment) {
+        // Ensure public directories exist
+        if (!fs.existsSync(PUBLIC_VIDEOS_DIR)) {
+          fs.mkdirSync(PUBLIC_VIDEOS_DIR, { recursive: true });
+        }
+
+        // For public access, copy to public directory
+        publicVideoPath = path.join('media/videos', videoFilename);
+        const fullPublicPath = path.join(PUBLIC_VIDEOS_DIR, videoFilename);
+
+        // Ensure image directory exists
+        const publicImagesDir = path.join(process.cwd(), 'public', 'media', 'images');
+        if (!fs.existsSync(publicImagesDir)) {
+          fs.mkdirSync(publicImagesDir, { recursive: true });
+        }
+
+        // Process images - either multiple or single
+        if (imagePaths && Array.isArray(imagePaths) && imagePaths.length > 0) {
+          // Handle multiple images
+          for (const imgPath of imagePaths) {
+            const publicImageFilename = `img-${uuidv4()}${path.extname(imgPath)}`;
+            const publicImagePath = path.join('media/images', publicImageFilename);
+            const fullPublicImagePath = path.join(publicImagesDir, publicImageFilename);
+
+            // Copy image to public directory
+            fs.copyFileSync(imgPath, fullPublicImagePath);
+            console.log(`Image saved to: ${fullPublicImagePath}`);
+
+            // Add to cleanup list
+            imagePathsToCleanup.push(imgPath);
+
+            // Add to public URLs list
+            publicImageUrls.push(`/${publicImagePath}`);
+
+            // Set primary image (first one) for fallback
+            if (!primaryImagePath) {
+              primaryImagePath = publicImagePath;
+              primaryImageUrl = `/${publicImagePath}`;
+            }
+          }
+        } else if (imagePath) {
+          // Handle single image
+          const publicImageFilename = `img-${uuidv4()}${path.extname(imagePath)}`;
           const publicImagePath = path.join('media/images', publicImageFilename);
           const fullPublicImagePath = path.join(publicImagesDir, publicImageFilename);
 
           // Copy image to public directory
-          fs.copyFileSync(imgPath, fullPublicImagePath);
+          fs.copyFileSync(imagePath, fullPublicImagePath);
           console.log(`Image saved to: ${fullPublicImagePath}`);
 
           // Add to cleanup list
-          imagePathsToCleanup.push(imgPath);
+          imagePathsToCleanup.push(imagePath);
 
-          // Add to public URLs list
-          publicImageUrls.push(`/${publicImagePath}`);
-
-          // Set primary image (first one) for fallback
-          if (!primaryImagePath) {
-            primaryImagePath = publicImagePath;
-            primaryImageUrl = `/${publicImagePath}`;
-          }
+          // Set primary image
+          primaryImagePath = publicImagePath;
+          primaryImageUrl = `/${publicImagePath}`;
+          publicImageUrls.push(primaryImageUrl);
         }
-      } else if (imagePath) {
-        // Handle single image
-        const publicImageFilename = `img-${uuidv4()}${path.extname(imagePath)}`;
-        const publicImagePath = path.join('media/images', publicImageFilename);
-        const fullPublicImagePath = path.join(publicImagesDir, publicImageFilename);
 
-        // Copy image to public directory
-        fs.copyFileSync(imagePath, fullPublicImagePath);
-        console.log(`Image saved to: ${fullPublicImagePath}`);
+        // Copy video to public directory
+        fs.copyFileSync(videoPath, fullPublicPath);
+        console.log(`Video saved to: ${fullPublicPath}`);
 
-        // Add to cleanup list
-        imagePathsToCleanup.push(imagePath);
+        // Create URL for the video
+        videoUrl = `/${publicVideoPath}`;
+      } else {
+        // In Vercel environment, use API routes to serve files from /tmp
+        console.log('Running in Vercel environment, using API routes for file access');
 
-        // Set primary image
-        primaryImagePath = publicImagePath;
-        primaryImageUrl = `/${publicImagePath}`;
-        publicImageUrls.push(primaryImageUrl);
+        // Keep the video in the temporary directory
+        publicVideoPath = videoPath;
+
+        // Create API route URL for the video
+        videoUrl = `/api/video/${videoFilename}`;
+
+        // For images, we'll use the ones already in the temporary directory
+        if (imagePaths && Array.isArray(imagePaths) && imagePaths.length > 0) {
+          // Handle multiple images
+          for (const imgPath of imagePaths) {
+            const imgFilename = path.basename(imgPath);
+
+            // Add to cleanup list (we'll clean up after the response)
+            imagePathsToCleanup.push(imgPath);
+
+            // Create API route URL for the image
+            const imageUrl = `/api/images/${imgFilename}`;
+            publicImageUrls.push(imageUrl);
+
+            // Set primary image (first one) for fallback
+            if (!primaryImagePath) {
+              primaryImagePath = imgPath;
+              primaryImageUrl = imageUrl;
+            }
+          }
+        } else if (imagePath) {
+          // Handle single image
+          const imgFilename = path.basename(imagePath);
+
+          // Add to cleanup list
+          imagePathsToCleanup.push(imagePath);
+
+          // Create API route URL for the image
+          primaryImagePath = imagePath;
+          primaryImageUrl = `/api/images/${imgFilename}`;
+          publicImageUrls.push(primaryImageUrl);
+        }
       }
 
-      // Copy video to public directory
-      fs.copyFileSync(videoPath, fullPublicPath);
-      console.log(`Video saved to: ${fullPublicPath}`);
-
       // Clean up temporary files (except the final video)
-      cleanupFiles(imagePathsToCleanup);
+      // In Vercel, we'll keep these files until the response is sent
+      if (!isVercelEnvironment) {
+        cleanupFiles(imagePathsToCleanup);
+      }
 
       // If FFmpeg is not available, use our sample HTML file
       const isFFmpegAvailable = !videoPath.includes('fallback');
 
-      // Create proper URLs for the resources
-      const videoUrl = `/${publicVideoPath}`;
+      // Create fallback URL
       const fallbackUrl = `/sample-video.html?image=${primaryImageUrl}&text=${encodeURIComponent(body.text || '')}`;
 
       return NextResponse.json({
@@ -162,7 +223,8 @@ export async function POST(request: NextRequest) {
         imageUrls: publicImageUrls,
         isSlideshow: imagePaths && Array.isArray(imagePaths) && imagePaths.length > 1,
         isSequence: isSequence,
-        effect: body.effect || 'simple'
+        effect: body.effect || 'simple',
+        isVercelEnvironment
       });
     } catch (saveError: any) {
       console.error('Error saving video files:', saveError);
