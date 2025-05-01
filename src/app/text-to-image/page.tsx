@@ -26,7 +26,7 @@ export default function TextToImagePage() {
       <header className="sticky top-0 z-50 glass border-b border-gray-200/50 dark:border-gray-800/50 shadow-sm">
         <div className="max-w-7xl mx-auto">
           {/* Top bar with logo and dark mode toggle */}
-          <div className="flex justify-between items-center py-4 px-4 md:px-6">
+          <div className="flex justify-between items-center py-3 sm:py-4 px-3 sm:px-4 md:px-6">
             {/* Logo and brand */}
             <div className="flex items-center space-x-3">
               <Link href="/" className="flex items-center space-x-2">
@@ -98,44 +98,46 @@ export default function TextToImagePage() {
             </div>
           </nav>
 
-          {/* Mobile menu - slide down when open */}
+          {/* Mobile menu - improved animation and styling */}
           <div
             className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
-              mobileMenuOpen ? 'max-h-64 opacity-100' : 'max-h-0 opacity-0'
+              mobileMenuOpen
+                ? 'max-h-64 opacity-100 translate-y-0'
+                : 'max-h-0 opacity-0 -translate-y-2'
             }`}
           >
-            <nav className="px-4 py-2 pb-4 space-y-1 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm">
+            <nav className="px-4 py-2 pb-4 space-y-1.5 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-b-lg shadow-lg">
               <Link
                 href="/"
-                className="block px-4 py-2.5 rounded-lg text-base font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200"
+                className="block px-4 py-3 rounded-lg text-base font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200 active:bg-gray-200 dark:active:bg-gray-700"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Home
               </Link>
               <Link
                 href="/text-to-image"
-                className="block px-4 py-2.5 rounded-lg text-base font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20"
+                className="block px-4 py-3 rounded-lg text-base font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 active:bg-indigo-100 dark:active:bg-indigo-900/40"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Text to Image
               </Link>
               <Link
                 href="/documentation"
-                className="block px-4 py-2.5 rounded-lg text-base font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200"
+                className="block px-4 py-3 rounded-lg text-base font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200 active:bg-gray-200 dark:active:bg-gray-700"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Documentation
               </Link>
               <Link
                 href="/ffmpeg-guide"
-                className="block px-4 py-2.5 rounded-lg text-base font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200"
+                className="block px-4 py-3 rounded-lg text-base font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200 active:bg-gray-200 dark:active:bg-gray-700"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 FFmpeg Guide
               </Link>
               <Link
                 href="/api-reference"
-                className="block px-4 py-2.5 rounded-lg text-base font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200"
+                className="block px-4 py-3 rounded-lg text-base font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200 active:bg-gray-200 dark:active:bg-gray-700"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 API Reference
@@ -145,58 +147,58 @@ export default function TextToImagePage() {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 py-12 mt-6">
+      <main className="max-w-4xl mx-auto px-3 sm:px-4 py-8 sm:py-12 mt-4 sm:mt-6">
         {/* Hero section with modern design */}
-        <div className="mb-12 text-center relative">
+        <div className="mb-8 sm:mb-12 text-center relative">
           {/* Background decorative elements */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-gradient-to-r from-indigo-500/5 to-violet-500/5 rounded-full blur-3xl -z-10"></div>
           <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_30%_20%,rgba(120,119,198,0.05),transparent)] -z-10"></div>
 
-          <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 leading-tight">
             Text to <span className="bg-gradient-to-r from-indigo-600 to-violet-500 dark:from-indigo-400 dark:to-violet-400 bg-clip-text text-transparent animate-gradient-shift">Image</span> Generator
           </h1>
-          <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-4">
+          <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-4">
             Create stunning AI-generated images from your text descriptions
           </p>
         </div>
 
         {/* Main form card with modern design */}
-        <div className="card p-8 mb-12 relative overflow-hidden">
+        <div className="card p-4 sm:p-6 md:p-8 mb-8 sm:mb-12 relative overflow-hidden">
           {/* Subtle background pattern */}
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiMzMzMiIGZpbGwtb3BhY2l0eT0iMC4wMiI+PHBhdGggZD0iTTM2IDM0djZoNnYtNmgtNnptNiA2djZoNnYtNmgtNnptLTEyIDBoNnY2aC02di02em0xMiAwaDZ2NmgtNnYtNnoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-50 dark:opacity-30 -z-10"></div>
           <TextToImageForm />
         </div>
 
         {/* Features section with modern cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-          <div className="glass p-8 rounded-2xl shadow-soft hover:shadow-soft-lg transition-all duration-300 hover:-translate-y-1 transform">
-            <div className="w-16 h-16 bg-gradient-to-br from-indigo-500/20 to-indigo-500/10 dark:from-indigo-500/30 dark:to-indigo-500/10 rounded-xl flex items-center justify-center mb-6 shadow-sm">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8 mb-10 sm:mb-16">
+          <div className="glass p-5 sm:p-6 md:p-8 rounded-2xl shadow-soft hover:shadow-soft-lg transition-all duration-300 hover:-translate-y-1 transform">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-gradient-to-br from-indigo-500/20 to-indigo-500/10 dark:from-indigo-500/30 dark:to-indigo-500/10 rounded-xl flex items-center justify-center mb-4 sm:mb-5 md:mb-6 shadow-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
               </svg>
             </div>
-            <h3 className="text-xl font-bold mb-3 bg-gradient-to-r from-indigo-600 to-indigo-500 dark:from-indigo-400 dark:to-indigo-300 bg-clip-text text-transparent">Creative Prompts</h3>
-            <p className="text-gray-600 dark:text-gray-300 leading-relaxed">Describe any scene, concept, or style and watch it come to life with AI-powered image generation</p>
+            <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3 bg-gradient-to-r from-indigo-600 to-indigo-500 dark:from-indigo-400 dark:to-indigo-300 bg-clip-text text-transparent">Creative Prompts</h3>
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 leading-relaxed">Describe any scene, concept, or style and watch it come to life with AI-powered image generation</p>
           </div>
 
-          <div className="glass p-8 rounded-2xl shadow-soft hover:shadow-soft-lg transition-all duration-300 hover:-translate-y-1 transform">
-            <div className="w-16 h-16 bg-gradient-to-br from-violet-500/20 to-violet-500/10 dark:from-violet-500/30 dark:to-violet-500/10 rounded-xl flex items-center justify-center mb-6 shadow-sm">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-violet-600 dark:text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="glass p-5 sm:p-6 md:p-8 rounded-2xl shadow-soft hover:shadow-soft-lg transition-all duration-300 hover:-translate-y-1 transform">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-gradient-to-br from-violet-500/20 to-violet-500/10 dark:from-violet-500/30 dark:to-violet-500/10 rounded-xl flex items-center justify-center mb-4 sm:mb-5 md:mb-6 shadow-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-violet-600 dark:text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
             </div>
-            <h3 className="text-xl font-bold mb-3 bg-gradient-to-r from-violet-600 to-violet-500 dark:from-violet-400 dark:to-violet-300 bg-clip-text text-transparent">Multiple Styles</h3>
-            <p className="text-gray-600 dark:text-gray-300 leading-relaxed">Choose from natural, vivid, or artistic styles to perfectly match your creative vision</p>
+            <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3 bg-gradient-to-r from-violet-600 to-violet-500 dark:from-violet-400 dark:to-violet-300 bg-clip-text text-transparent">Multiple Styles</h3>
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 leading-relaxed">Choose from natural, vivid, or artistic styles to perfectly match your creative vision</p>
           </div>
 
-          <div className="glass p-8 rounded-2xl shadow-soft hover:shadow-soft-lg transition-all duration-300 hover:-translate-y-1 transform">
-            <div className="w-16 h-16 bg-gradient-to-br from-fuchsia-500/20 to-fuchsia-500/10 dark:from-fuchsia-500/30 dark:to-fuchsia-500/10 rounded-xl flex items-center justify-center mb-6 shadow-sm">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-fuchsia-600 dark:text-fuchsia-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="glass p-5 sm:p-6 md:p-8 rounded-2xl shadow-soft hover:shadow-soft-lg transition-all duration-300 hover:-translate-y-1 transform sm:col-span-2 md:col-span-1">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-gradient-to-br from-fuchsia-500/20 to-fuchsia-500/10 dark:from-fuchsia-500/30 dark:to-fuchsia-500/10 rounded-xl flex items-center justify-center mb-4 sm:mb-5 md:mb-6 shadow-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-fuchsia-600 dark:text-fuchsia-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
               </svg>
             </div>
-            <h3 className="text-xl font-bold mb-3 bg-gradient-to-r from-fuchsia-600 to-fuchsia-500 dark:from-fuchsia-400 dark:to-fuchsia-300 bg-clip-text text-transparent">Instant Download</h3>
-            <p className="text-gray-600 dark:text-gray-300 leading-relaxed">Download your generated images instantly for use in any project or to create stunning videos</p>
+            <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3 bg-gradient-to-r from-fuchsia-600 to-fuchsia-500 dark:from-fuchsia-400 dark:to-fuchsia-300 bg-clip-text text-transparent">Instant Download</h3>
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 leading-relaxed">Download your generated images instantly for use in any project or to create stunning videos</p>
           </div>
         </div>
 
@@ -215,7 +217,7 @@ export default function TextToImagePage() {
       </main>
 
       {/* Modern footer with gradient accent and glassmorphism */}
-      <footer className="relative mt-20">
+      <footer className="relative mt-12 sm:mt-16 md:mt-20">
         {/* Gradient accent */}
         <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-indigo-600 via-violet-500 to-fuchsia-500 animate-gradient-shift bg-[length:200%_200%]"></div>
 
@@ -226,54 +228,54 @@ export default function TextToImagePage() {
         </div>
 
         {/* Main footer content */}
-        <div className="glass pt-16 pb-10 px-4 transition-all relative z-10">
+        <div className="glass pt-10 sm:pt-12 md:pt-16 pb-8 sm:pb-10 px-3 sm:px-4 transition-all relative z-10">
           <div className="max-w-6xl mx-auto">
             {/* Footer navigation */}
-            <nav className="flex flex-wrap justify-center gap-2 md:gap-8 mb-10">
+            <nav className="flex flex-wrap justify-center gap-1.5 sm:gap-2 md:gap-8 mb-8 sm:mb-10">
               <Link
                 href="/"
-                className="px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200 text-sm md:text-base rounded-lg hover:bg-gray-100/80 dark:hover:bg-gray-800/50"
+                className="px-3 sm:px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200 text-xs sm:text-sm md:text-base rounded-lg hover:bg-gray-100/80 dark:hover:bg-gray-800/50 active:bg-gray-200 dark:active:bg-gray-700"
               >
                 Home
               </Link>
               <Link
                 href="/text-to-image"
-                className="px-4 py-2 text-indigo-600 dark:text-indigo-400 transition-all duration-200 text-sm md:text-base rounded-lg bg-indigo-50/50 dark:bg-indigo-900/20"
+                className="px-3 sm:px-4 py-2 text-indigo-600 dark:text-indigo-400 transition-all duration-200 text-xs sm:text-sm md:text-base rounded-lg bg-indigo-50/50 dark:bg-indigo-900/20 active:bg-indigo-100 dark:active:bg-indigo-900/40"
               >
                 Text to Image
               </Link>
               <Link
                 href="/documentation"
-                className="px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200 text-sm md:text-base rounded-lg hover:bg-gray-100/80 dark:hover:bg-gray-800/50"
+                className="px-3 sm:px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200 text-xs sm:text-sm md:text-base rounded-lg hover:bg-gray-100/80 dark:hover:bg-gray-800/50 active:bg-gray-200 dark:active:bg-gray-700"
               >
                 Documentation
               </Link>
               <Link
                 href="/ffmpeg-guide"
-                className="px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200 text-sm md:text-base rounded-lg hover:bg-gray-100/80 dark:hover:bg-gray-800/50"
+                className="px-3 sm:px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200 text-xs sm:text-sm md:text-base rounded-lg hover:bg-gray-100/80 dark:hover:bg-gray-800/50 active:bg-gray-200 dark:active:bg-gray-700"
               >
                 FFmpeg Guide
               </Link>
               <Link
                 href="/api-reference"
-                className="px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200 text-sm md:text-base rounded-lg hover:bg-gray-100/80 dark:hover:bg-gray-800/50"
+                className="px-3 sm:px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200 text-xs sm:text-sm md:text-base rounded-lg hover:bg-gray-100/80 dark:hover:bg-gray-800/50 active:bg-gray-200 dark:active:bg-gray-700"
               >
                 API Reference
               </Link>
             </nav>
 
             {/* Copyright */}
-            <div className="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-gray-200/30 dark:border-gray-800/30">
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+            <div className="flex flex-col md:flex-row justify-between items-center pt-6 sm:pt-8 border-t border-gray-200/30 dark:border-gray-800/30">
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                 © {new Date().getFullYear()} NarrateVision. All rights reserved.
               </p>
-              <div className="flex items-center mt-4 md:mt-0">
-                <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-r from-indigo-500/10 to-violet-500/10 mr-3">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-indigo-500 dark:text-indigo-400" viewBox="0 0 20 20" fill="currentColor">
+              <div className="flex items-center mt-3 md:mt-0">
+                <span className="inline-flex h-5 sm:h-6 w-5 sm:w-6 items-center justify-center rounded-full bg-gradient-to-r from-indigo-500/10 to-violet-500/10 mr-2 sm:mr-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-indigo-500 dark:text-indigo-400" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
                   </svg>
                 </span>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                   Built with Next.js, Tailwind CSS, and AI
                 </p>
               </div>

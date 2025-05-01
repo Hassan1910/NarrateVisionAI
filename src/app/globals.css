@@ -295,3 +295,41 @@ body {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   @apply bg-gray-400 dark:bg-gray-500;
 }
+
+/* Mobile optimizations */
+@media (max-width: 640px) {
+  .form-input {
+    @apply px-3 py-2 text-sm;
+  }
+
+  .form-select {
+    @apply px-3 py-2 text-sm;
+  }
+
+  .btn-primary, .btn-secondary {
+    @apply px-4 py-2 text-sm;
+  }
+
+  .card {
+    @apply p-4 rounded-xl;
+  }
+
+  .section-title {
+    @apply text-xl mb-3;
+  }
+
+  /* Improve touch targets for mobile */
+  button, a, [role="button"] {
+    @apply min-h-[44px] min-w-[44px];
+  }
+
+  /* Optimize spacing for mobile */
+  .space-y-8 {
+    @apply space-y-6;
+  }
+
+  /* Improve form elements for touch */
+  input, select, textarea {
+    @apply text-base;
+  }
+}
