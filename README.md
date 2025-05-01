@@ -2,6 +2,10 @@
 
 Transform Words into Visual Stories with AI-generated visuals and narration.
 
+## Live Demo
+
+🚀 **Check out the live demo**: [https://narratevision.vercel.app/](https://narratevision.vercel.app/)
+
 ![NarrateVision Logo](https://via.placeholder.com/1200x630?text=NarrateVision)
 
 ## Features
@@ -104,6 +108,8 @@ The application guides you through the video creation process with clear instruc
 ## Deploy on Vercel
 
 The easiest way to deploy NarrateVision is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+**Live Demo**: The application is currently deployed at [https://narratevision.vercel.app/](https://narratevision.vercel.app/)
 
 ### Deployment Steps
 
