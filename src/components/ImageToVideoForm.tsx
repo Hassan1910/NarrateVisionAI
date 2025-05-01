@@ -5,6 +5,7 @@ import AnimatedImage from './AnimatedImage';
 import VideoEffects from './VideoEffects';
 import VideoSimulation from './VideoSimulation';
 import ImageSequence from './ImageSequence';
+import MicrophoneButton from './MicrophoneButton';
 
 // Voice options for narration
 const VOICE_OPTIONS = [
@@ -430,17 +431,27 @@ export default function ImageToVideoForm() {
               Narration Text
             </label>
           </div>
-          <textarea
-            id="narration"
-            rows={5}
-            value={formState.narration}
-            onChange={(e) => setFormState(prev => ({ ...prev, narration: e.target.value }))}
-            className="form-input"
-            placeholder="Enter your story or message here. This text will be used for narration and to generate matching visuals..."
-            disabled={formState.progress !== 'idle' && formState.progress !== 'error'}
-          />
+          <div className="relative">
+            <textarea
+              id="narration"
+              rows={5}
+              value={formState.narration}
+              onChange={(e) => setFormState(prev => ({ ...prev, narration: e.target.value }))}
+              className="form-input pr-12"
+              placeholder="Enter your story or message here. This text will be used for narration and to generate matching visuals..."
+              disabled={formState.progress !== 'idle' && formState.progress !== 'error'}
+            />
+            <div className="absolute right-2 bottom-2">
+              <MicrophoneButton
+                onTranscriptChange={(text) => setFormState(prev => ({ ...prev, narration: text }))}
+                appendToExisting={true}
+                existingText={formState.narration}
+                className="h-10 w-10"
+              />
+            </div>
+          </div>
           <p className="text-xs text-gray-500 dark:text-gray-400">
-            For best results, use descriptive language and separate paragraphs with line breaks
+            For best results, use descriptive language and separate paragraphs with line breaks. Click the microphone icon to use speech-to-text.
           </p>
         </div>
 

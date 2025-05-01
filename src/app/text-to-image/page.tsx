@@ -3,7 +3,6 @@
 import { useEffect } from 'react';
 import Link from 'next/link';
 import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import TextToImageForm from '@/components/TextToImageForm';
 
 export default function TextToImagePage() {
@@ -142,7 +141,7 @@ export default function TextToImagePage() {
       <footer className="relative mt-16">
         {/* Gradient accent */}
         <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600"></div>
-        
+
         <div className="max-w-7xl mx-auto py-12 px-4 overflow-hidden sm:px-6 lg:px-8">
           <nav className="flex flex-wrap justify-center">
             <div className="px-5 py-2">

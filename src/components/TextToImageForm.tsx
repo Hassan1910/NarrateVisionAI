@@ -1,5 +1,6 @@
 import { useState, FormEvent } from 'react';
 import { toast } from 'react-toastify';
+import MicrophoneButton from './MicrophoneButton';
 
 // Define image style options
 const IMAGE_STYLE_OPTIONS = [
@@ -113,15 +114,28 @@ export default function TextToImageForm() {
           <label htmlFor="prompt" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Text Prompt
           </label>
-          <textarea
-            id="prompt"
-            rows={3}
-            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-            placeholder="Describe the image you want to generate..."
-            value={formState.prompt}
-            onChange={(e) => setFormState(prev => ({ ...prev, prompt: e.target.value }))}
-            disabled={formState.isGeneratingImage}
-          />
+          <div className="relative">
+            <textarea
+              id="prompt"
+              rows={3}
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 pr-12"
+              placeholder="Describe the image you want to generate..."
+              value={formState.prompt}
+              onChange={(e) => setFormState(prev => ({ ...prev, prompt: e.target.value }))}
+              disabled={formState.isGeneratingImage}
+            />
+            <div className="absolute right-2 bottom-2">
+              <MicrophoneButton
+                onTranscriptChange={(text) => setFormState(prev => ({ ...prev, prompt: text }))}
+                appendToExisting={true}
+                existingText={formState.prompt}
+                className="h-10 w-10"
+              />
+            </div>
+          </div>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            Click the microphone icon to use speech-to-text
+          </p>
         </div>
 
         {/* Image Style Selection */}

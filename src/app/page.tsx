@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 // Dynamically import components to avoid hydration issues
 const ImageToVideoForm = dynamic(() => import('@/components/ImageToVideoForm'), {
