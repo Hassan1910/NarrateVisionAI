@@ -1,0 +1,45 @@
+{
+  "title": "The Power of Consistency",
+  "scenes": [
+    {
+      "scene_number": 1,
+      "voiceover": "Success doesn't come overnight. It's built, one small step at a time.",
+      "visual_description": "A sunrise over a quiet city. A person waking up and stretching.",
+      "on_screen_text": ""
+    },
+    {
+      "scene_number": 2,
+      "voiceover": "Each morning you rise, you're given a new opportunity to grow.",
+      "visual_description": "Person brushing teeth, putting on workout gear.",
+      "on_screen_text": ""
+    },
+    {
+      "scene_number": 3,
+      "voiceover": "Consistency means showing up, even when you don't feel like it.",
+      "visual_description": "Clips of the person working out, reading a book, or coding.",
+      "on_screen_text": ""
+    },
+    {
+      "scene_number": 4,
+      "voiceover": "At first, the progress may seem invisible. But every action adds up.",
+      "visual_description": "Calendar flipping pages, a graph slowly going upward.",
+      "on_screen_text": ""
+    },
+    {
+      "scene_number": 5,
+      "voiceover": "And one day, you'll look back and see how far you've come.",
+      "visual_description": "Person receiving an award, launching a project, or crossing a finish line.",
+      "on_screen_text": ""
+    },
+    {
+      "scene_number": 6,
+      "voiceover": "Stay consistent. Your future self is already proud of you.",
+      "visual_description": "Person smiling, looking at their reflection. Fade to a motivational quote.",
+      "on_screen_text": "Stay consistent."
+    }
+  ],
+  "closing_quote": {
+    "text": "Success is the sum of small efforts, repeated day in and day out.",
+    "author": "Robert Collier"
+  }
+}

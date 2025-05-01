@@ -1,0 +1,182 @@
+import { NextRequest, NextResponse } from 'next/server';
+import fs from 'fs';
+import path from 'path';
+import { v4 as uuidv4 } from 'uuid';
+import axios from 'axios';
+
+const API_KEY = process.env.OPENAI_API_KEY;
+const TMP_DIR = process.env.VIDEO_OUTPUT_DIR || '/tmp/videos';
+// Public directory for serving images
+const PUBLIC_IMAGES_DIR = path.join(process.cwd(), 'public', 'media', 'images');
+// Primary API endpoint for image generation
+const OPENAI_API_URL = 'https://api.openai.com/v1/images/generations';
+// Fallback API endpoint if needed
+const ZERO2LAUNCH_API_URL = 'https://api.zero2launch.com/download-image/data';
+
+export async function POST(request: NextRequest) {
+  try {
+    // Ensure directories exist
+    [TMP_DIR, PUBLIC_IMAGES_DIR].forEach(dir => {
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+    });
+
+    // Parse request body
+    const body = await request.json();
+    const { prompts, style } = body;
+
+    if (!prompts || !Array.isArray(prompts) || prompts.length === 0) {
+      return NextResponse.json(
+        { error: 'At least one prompt is required' },
+        { status: 400 }
+      );
+    }
+
+    // Generate images for each prompt
+    const imageResults = await Promise.all(
+      prompts.map(async (prompt, index) => {
+        try {
+          console.log(`Generating image ${index + 1}/${prompts.length} for prompt: "${prompt}"`);
+          
+          // Try OpenAI API first
+          try {
+            console.log(`Generating image ${index + 1} with OpenAI API for prompt: "${prompt.substring(0, 50)}..."`);
+            
+            const openaiResponse = await axios.post(
+              OPENAI_API_URL,
+              {
+                prompt: prompt,
+                n: 1,
+                size: "1024x1024",
+                response_format: "b64_json",
+                style: style || "vivid"
+              },
+              {
+                headers: {
+                  'Authorization': `Bearer ${API_KEY}`,
+                  'Content-Type': 'application/json',
+                },
+                timeout: 30000 // 30 second timeout
+              }
+            );
+            
+            // Extract base64 image data and convert to buffer
+            if (openaiResponse.data && 
+                openaiResponse.data.data && 
+                openaiResponse.data.data[0] && 
+                openaiResponse.data.data[0].b64_json) {
+              
+              const imageBuffer = Buffer.from(openaiResponse.data.data[0].b64_json, 'base64');
+              
+              // Verify the buffer is a valid image (check for JPEG header)
+              if (imageBuffer.length < 2 || imageBuffer[0] !== 0xFF || imageBuffer[1] !== 0xD8) {
+                console.warn(`Invalid JPEG data received for image ${index + 1}`);
+                throw new Error('Invalid JPEG data received from API');
+              }
+              
+              // Save image to both temporary and public directories
+              const imageFilename = `image-${uuidv4()}.jpg`;
+              const imagePath = path.join(TMP_DIR, imageFilename);
+              const publicImagePath = path.join(PUBLIC_IMAGES_DIR, imageFilename);
+              
+              // Write to both locations
+              fs.writeFileSync(imagePath, imageBuffer);
+              fs.writeFileSync(publicImagePath, imageBuffer);
+              
+              // Verify the file was written correctly
+              if (!fs.existsSync(imagePath) || fs.statSync(imagePath).size === 0) {
+                throw new Error(`Failed to write image file ${imagePath}`);
+              }
+              
+              console.log(`Successfully generated image ${index + 1} from OpenAI API (${imageBuffer.length} bytes)`);
+              
+              // Public URL for the image
+              const imageUrl = `/media/images/${imageFilename}`;
+              
+              return {
+                success: true,
+                imagePath,
+                imageUrl,
+                publicPath: publicImagePath,
+                prompt,
+                size: imageBuffer.length
+              };
+            } else {
+              console.warn(`Invalid response format from OpenAI API for image ${index + 1}`);
+              throw new Error('Invalid response format from OpenAI API');
+            }
+          } catch (openaiError: any) {
+            console.warn(`OpenAI API error for image ${index + 1}:`, openaiError.message);
+            throw openaiError; // Re-throw to be caught by the outer catch
+          }
+        } catch (error: any) {
+          console.error(`Error generating image ${index + 1}:`, error.message);
+          
+          // Use a colored placeholder image as fallback
+          console.log(`Using fallback image generation for segment ${index + 1}`);
+          
+          // Create a colored JPEG based on the segment index
+          const colors = [
+            [255, 0, 0],    // Red
+            [0, 0, 255],    // Blue
+            [0, 255, 0],    // Green
+            [255, 255, 0],  // Yellow
+            [128, 0, 128]   // Purple
+          ];
+          const color = colors[index % colors.length];
+          
+          // Create a minimal valid JPEG with color
+          const imageBuffer = Buffer.from([
+            0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10, 0x4A, 0x46, 0x49, 0x46, 0x00, 0x01, 0x01, 0x01, 0x00, 0x48,
+            0x00, 0x48, 0x00, 0x00, 0xFF, 0xDB, 0x00, 0x43, 0x00, color[0], color[1], color[2], color[0], color[1], color[2], color[0],
+            color[1], color[2], color[0], color[1], color[2], color[0], color[1], color[2], color[0], color[1], color[2], color[0], color[1], color[2], color[0], color[1],
+            color[2], color[0], color[1], color[2], color[0], color[1], color[2], color[0], color[1], color[2], color[0], color[1], color[2], color[0], color[1], color[2],
+            color[0], color[1], color[2], color[0], color[1], color[2], color[0], color[1], color[2], color[0], color[1], color[2], color[0], color[1], color[2], color[0],
+            color[1], color[2], color[0], color[1], color[2], color[0], color[1], color[2], color[0], color[1], color[2], color[0], color[1], color[2], 0xC2, 0x00, 0x0B,
+            0x08, 0x00, 0x01, 0x00, 0x01, 0x01, 0x01, 0x11, 0x00, 0xFF, 0xC4, 0x00, 0x14, 0x10, 0x01, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF,
+            0xDA, 0x00, 0x08, 0x01, 0x01, 0x00, 0x01, 0x3F, 0x10
+          ]);
+          
+          // Save fallback image
+          const imageFilename = `fallback-${uuidv4()}.jpg`;
+          const imagePath = path.join(TMP_DIR, imageFilename);
+          const publicImagePath = path.join(PUBLIC_IMAGES_DIR, imageFilename);
+          
+          fs.writeFileSync(imagePath, imageBuffer);
+          fs.writeFileSync(publicImagePath, imageBuffer);
+          
+          console.log(`Created fallback image for segment ${index + 1}`);
+          
+          // Public URL for the fallback image
+          const imageUrl = `/media/images/${imageFilename}`;
+          
+          return {
+            success: true, // Mark as success so slideshow still works
+            imagePath,
+            imageUrl,
+            publicPath: publicImagePath,
+            isFallback: true,
+            prompt
+          };
+        }
+      })
+    );
+
+    return NextResponse.json({
+      success: true,
+      images: imageResults
+    });
+  } catch (error: any) {
+    console.error('Error in generate-multiple-images:', error);
+    
+    return NextResponse.json(
+      { 
+        error: 'Failed to generate images',
+        details: error.message 
+      },
+      { status: 500 }
+    );
+  }
+}

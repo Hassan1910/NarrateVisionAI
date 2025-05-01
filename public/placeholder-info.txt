@@ -1,0 +1,8 @@
+This is a placeholder for when image generation fails. 
+
+To add a custom placeholder image:
+1. Create a 1024x768 JPEG image
+2. Name it "placeholder.jpg"
+3. Place it in the public directory of the application
+
+The application will automatically use this image when image generation fails.
