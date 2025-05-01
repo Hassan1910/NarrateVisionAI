@@ -59,8 +59,11 @@ Configure the application by editing the `.env.local` file:
 # API Keys
 OPENAI_API_KEY=your_openai_api_key
 
+# API Configuration
+API_PROVIDER=openai
+
 # Storage settings
-VIDEO_OUTPUT_DIR=/tmp/videos
+VIDEO_OUTPUT_DIR=public/videos
 
 # FFmpeg Configuration
 SHOW_FFMPEG_WARNING=true
@@ -69,10 +72,16 @@ SHOW_FFMPEG_WARNING=true
 MAX_SLIDESHOW_IMAGES=4
 TRANSITION_DURATION=1
 
-# Image and Audio Configuration
+# Image Generation Configuration
 DEFAULT_IMAGE_STYLE=natural
+DEFAULT_IMAGE_SIZE=1024x1024
+
+# Audio Configuration
 DEFAULT_VOICE=alloy
+AUDIO_QUALITY=high
 ```
+
+A template `.env.example` file is provided in the repository.
 
 ## Creating Slideshow Videos
 
@@ -94,6 +103,26 @@ The application guides you through the video creation process with clear instruc
 
 ## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The easiest way to deploy NarrateVision is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+### Deployment Steps
+
+1. Fork or clone this repository to your GitHub account
+2. Connect your GitHub repository to Vercel
+3. Configure the following environment variables in your Vercel project settings:
+   - `OPENAI_API_KEY`: Your OpenAI API key
+   - `API_PROVIDER`: Set to 'openai' or 'zero2launch'
+   - `VIDEO_OUTPUT_DIR`: Set to 'public/videos'
+   - `SHOW_FFMPEG_WARNING`: Set to 'true'
+   - `MAX_SLIDESHOW_IMAGES`: Set to '4' or your preferred number
+   - `TRANSITION_DURATION`: Set to '1' or your preferred duration
+   - `DEFAULT_IMAGE_STYLE`: Set to 'natural' or 'vivid'
+   - `DEFAULT_IMAGE_SIZE`: Set to '1024x1024'
+   - `DEFAULT_VOICE`: Set to 'alloy' or your preferred voice
+   - `AUDIO_QUALITY`: Set to 'high', 'medium', or 'low'
+
+4. Deploy your project
+
+Note: The application uses FFmpeg for video processing, which is included in the Vercel environment.
 
 Check out the [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
