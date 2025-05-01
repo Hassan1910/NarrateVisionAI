@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, FormEvent } from 'react';
 import { toast } from 'react-toastify';
 import MicrophoneButton from './MicrophoneButton';

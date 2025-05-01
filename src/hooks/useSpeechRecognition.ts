@@ -54,12 +54,6 @@ interface SpeechRecognitionConstructor {
   new (): SpeechRecognition;
 }
 
-// Get the correct SpeechRecognition implementation
-const SpeechRecognitionAPI = 
-  (window as any).SpeechRecognition || 
-  (window as any).webkitSpeechRecognition || 
-  null;
-
 export function useSpeechRecognition(): SpeechRecognitionHook {
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState('');
@@ -67,15 +61,26 @@ export function useSpeechRecognition(): SpeechRecognitionHook {
   const [recognition, setRecognition] = useState<SpeechRecognition | null>(null);
   const [hasRecognitionSupport, setHasRecognitionSupport] = useState(false);
 
-  // Initialize speech recognition
+  // Initialize speech recognition - only runs on client side
   useEffect(() => {
+    // Check if we're in a browser environment
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    // Get the correct SpeechRecognition implementation
+    const SpeechRecognitionAPI =
+      (window as any).SpeechRecognition ||
+      (window as any).webkitSpeechRecognition ||
+      null;
+
     if (SpeechRecognitionAPI) {
       setHasRecognitionSupport(true);
       const recognitionInstance = new SpeechRecognitionAPI();
       recognitionInstance.continuous = true;
       recognitionInstance.interimResults = true;
       recognitionInstance.lang = 'en-US';
-      
+
       recognitionInstance.onresult = (event: SpeechRecognitionEvent) => {
         let currentTranscript = '';
         for (let i = event.resultIndex; i < event.results.length; i++) {

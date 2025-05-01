@@ -8,11 +8,14 @@ import TextToImageForm from '@/components/TextToImageForm';
 export default function TextToImagePage() {
   // Always use dark mode
   useEffect(() => {
-    // Apply dark mode class
-    document.documentElement.classList.add('dark');
+    // Check if we're in a browser environment
+    if (typeof window !== 'undefined') {
+      // Apply dark mode class
+      document.documentElement.classList.add('dark');
 
-    // Save preference to localStorage
-    localStorage.setItem('darkMode', 'true');
+      // Save preference to localStorage
+      localStorage.setItem('darkMode', 'true');
+    }
   }, []);
 
   return (

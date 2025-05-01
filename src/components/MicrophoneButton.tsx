@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
 import { toast } from 'react-toastify';
@@ -35,7 +37,7 @@ const MicrophoneButton: React.FC<MicrophoneButtonProps> = ({
     if (isListening) {
       stopListening();
       if (transcript) {
-        const newText = appendToExisting 
+        const newText = appendToExisting
           ? `${existingText} ${transcript}`.trim()
           : transcript;
         onTranscriptChange(newText);
@@ -63,8 +65,8 @@ const MicrophoneButton: React.FC<MicrophoneButtonProps> = ({
       type="button"
       onClick={handleMicrophoneClick}
       className={`p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
-        isListening 
-          ? 'bg-red-500 text-white animate-pulse' 
+        isListening
+          ? 'bg-red-500 text-white animate-pulse'
           : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
       } ${className}`}
       title={isListening ? 'Stop recording' : 'Start speech recognition'}
