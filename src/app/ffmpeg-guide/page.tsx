@@ -100,12 +100,12 @@ export default function FFmpegGuidePage() {
               <li>Extract the ZIP file to a location on your computer (e.g., <code className="bg-gray-100 dark:bg-gray-900 px-1 py-0.5 rounded text-sm">C:\ffmpeg</code>)</li>
               <li>Add FFmpeg to your PATH:
                 <ul className="list-disc pl-5 mt-1 space-y-1">
-                  <li>Right-click on "This PC" or "My Computer" and select "Properties"</li>
-                  <li>Click on "Advanced system settings"</li>
-                  <li>Click on "Environment Variables"</li>
-                  <li>Under "System variables", find the "Path" variable, select it and click "Edit"</li>
-                  <li>Click "New" and add the path to the FFmpeg <code className="bg-gray-100 dark:bg-gray-900 px-1 py-0.5 rounded text-sm">bin</code> folder (e.g., <code className="bg-gray-100 dark:bg-gray-900 px-1 py-0.5 rounded text-sm">C:\ffmpeg\bin</code>)</li>
-                  <li>Click "OK" on all dialogs to save the changes</li>
+                  <li>Right-click on &quot;This PC&quot; or &quot;My Computer&quot; and select &quot;Properties&quot;</li>
+                  <li>Click on &quot;Advanced system settings&quot;</li>
+                  <li>Click on &quot;Environment Variables&quot;</li>
+                  <li>Under &quot;System variables&quot;, find the &quot;Path&quot; variable, select it and click &quot;Edit&quot;</li>
+                  <li>Click &quot;New&quot; and add the path to the FFmpeg <code className="bg-gray-100 dark:bg-gray-900 px-1 py-0.5 rounded text-sm">bin</code> folder (e.g., <code className="bg-gray-100 dark:bg-gray-900 px-1 py-0.5 rounded text-sm">C:\ffmpeg\bin</code>)</li>
+                  <li>Click &quot;OK&quot; on all dialogs to save the changes</li>
                 </ul>
               </li>
               <li>Verify installation by opening a new Command Prompt or PowerShell window and running:
