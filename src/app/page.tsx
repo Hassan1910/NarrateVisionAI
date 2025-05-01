@@ -16,6 +16,7 @@ const FFmpegWarning = dynamic(() => import('@/components/FFmpegWarning'), {
 
 export default function Home() {
   const [showFFmpegWarning, setShowFFmpegWarning] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Check if FFmpeg is missing on component mount
   useEffect(() => {
@@ -51,7 +52,7 @@ export default function Home() {
       <header className="sticky top-0 z-50 glass border-b border-gray-200/50 dark:border-gray-800/50 shadow-sm">
         <div className="max-w-7xl mx-auto">
           {/* Top bar with logo and dark mode toggle */}
-          <div className="flex justify-between items-center py-4 px-4 md:px-6">
+          <div className="flex justify-between items-center py-3 sm:py-4 px-3 sm:px-4 md:px-6">
             {/* Logo and brand */}
             <div className="flex items-center space-x-3">
               <div className="relative h-12 w-12 overflow-hidden rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center shadow-lg animate-pulse-soft">
@@ -83,17 +84,24 @@ export default function Home() {
 
               {/* Mobile menu button */}
               <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 className="md:hidden p-2 rounded-lg text-gray-500 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 transition-all duration-200"
-                aria-label="Open menu"
+                aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
-                </svg>
+                {mobileMenuOpen ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
+                  </svg>
+                )}
               </button>
             </div>
           </div>
 
-          {/* Navigation bar */}
+          {/* Desktop Navigation bar */}
           <nav className="hidden md:flex">
             <div className="flex space-x-2 px-4 py-3">
               <a href="#" className="px-4 py-2 rounded-lg text-sm font-medium text-white bg-gradient-to-r from-indigo-600 to-violet-500 shadow-sm">
@@ -113,29 +121,76 @@ export default function Home() {
               </a>
             </div>
           </nav>
+
+          {/* Mobile menu - improved animation and styling */}
+          <div
+            className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
+              mobileMenuOpen
+                ? 'max-h-64 opacity-100 translate-y-0'
+                : 'max-h-0 opacity-0 -translate-y-2'
+            }`}
+          >
+            <nav className="px-4 py-2 pb-4 space-y-1.5 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-b-lg shadow-lg">
+              <a
+                href="#"
+                className="block px-4 py-3 rounded-lg text-base font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 active:bg-indigo-100 dark:active:bg-indigo-900/40"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Home
+              </a>
+              <a
+                href="/text-to-image"
+                className="block px-4 py-3 rounded-lg text-base font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200 active:bg-gray-200 dark:active:bg-gray-700"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Text to Image
+              </a>
+              <a
+                href="/documentation"
+                className="block px-4 py-3 rounded-lg text-base font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200 active:bg-gray-200 dark:active:bg-gray-700"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Documentation
+              </a>
+              <a
+                href="/ffmpeg-guide"
+                className="block px-4 py-3 rounded-lg text-base font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200 active:bg-gray-200 dark:active:bg-gray-700"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                FFmpeg Guide
+              </a>
+              <a
+                href="/api-reference"
+                className="block px-4 py-3 rounded-lg text-base font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200 active:bg-gray-200 dark:active:bg-gray-700"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                API Reference
+              </a>
+            </nav>
+          </div>
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 py-12 mt-6">
+      <main className="max-w-6xl mx-auto px-3 sm:px-4 py-8 sm:py-12 mt-4 sm:mt-6">
         {/* Hero section with modern design */}
-        <div className="mb-12 text-center relative">
+        <div className="mb-8 sm:mb-12 text-center relative">
           {/* Background decorative elements */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-gradient-to-r from-indigo-500/5 to-violet-500/5 rounded-full blur-3xl -z-10"></div>
           <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_30%_20%,rgba(120,119,198,0.05),transparent)] -z-10"></div>
 
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 leading-tight">
             Create Stunning Videos from <span className="bg-gradient-to-r from-indigo-600 to-violet-500 dark:from-indigo-400 dark:to-violet-400 bg-clip-text text-transparent animate-gradient-shift">Your Words</span>
           </h2>
-          <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-8">
+          <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-6 sm:mb-8">
             Transform your text into engaging videos with AI-generated visuals and natural narration
           </p>
 
           {/* CTA Button */}
           <a
             href="#create"
-            className="inline-flex items-center px-6 py-3 text-base font-medium rounded-xl bg-gradient-to-r from-indigo-600 to-violet-500 text-white hover:from-indigo-700 hover:to-violet-600 transition-all shadow-md hover:shadow-lg hover:-translate-y-1 transform duration-200"
+            className="inline-flex items-center px-5 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base font-medium rounded-lg sm:rounded-xl bg-gradient-to-r from-indigo-600 to-violet-500 text-white hover:from-indigo-700 hover:to-violet-600 transition-all shadow-md hover:shadow-lg hover:-translate-y-1 active:translate-y-0 transform duration-200"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5 mr-1.5 sm:mr-2" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
             </svg>
             Get Started Now
@@ -150,42 +205,42 @@ export default function Home() {
         )}
 
         {/* Main form card with ID for direct navigation */}
-        <div id="create" className="card p-8 mb-12 relative overflow-hidden">
+        <div id="create" className="card p-4 sm:p-6 md:p-8 mb-8 sm:mb-12 relative overflow-hidden">
           {/* Subtle background pattern */}
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiMzMzMiIGZpbGwtb3BhY2l0eT0iMC4wMiI+PHBhdGggZD0iTTM2IDM0djZoNnYtNmgtNnptNiA2djZoNnYtNmgtNnptLTEyIDBoNnY2aC02di02em0xMiAwaDZ2NmgtNnYtNnoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-50 dark:opacity-30 -z-10"></div>
           <ImageToVideoForm />
         </div>
 
         {/* Features section with modern cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-          <div className="glass p-8 rounded-2xl shadow-soft hover:shadow-soft-lg transition-all duration-300 hover:-translate-y-1 transform">
-            <div className="w-16 h-16 bg-gradient-to-br from-indigo-500/20 to-indigo-500/10 dark:from-indigo-500/30 dark:to-indigo-500/10 rounded-xl flex items-center justify-center mb-6 shadow-sm">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-indigo-600 dark:text-indigo-400" viewBox="0 0 20 20" fill="currentColor">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8 mb-10 sm:mb-16">
+          <div className="glass p-5 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl shadow-soft hover:shadow-soft-lg transition-all duration-300 hover:-translate-y-1 transform">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-gradient-to-br from-indigo-500/20 to-indigo-500/10 dark:from-indigo-500/30 dark:to-indigo-500/10 rounded-xl flex items-center justify-center mb-4 sm:mb-5 md:mb-6 shadow-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-indigo-600 dark:text-indigo-400" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
               </svg>
             </div>
-            <h3 className="text-xl font-bold mb-3 bg-gradient-to-r from-indigo-600 to-indigo-500 dark:from-indigo-400 dark:to-indigo-300 bg-clip-text text-transparent">AI-Generated Visuals</h3>
-            <p className="text-gray-600 dark:text-gray-300 leading-relaxed">Automatically creates stunning images that match your narrative text with advanced AI technology</p>
+            <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3 bg-gradient-to-r from-indigo-600 to-indigo-500 dark:from-indigo-400 dark:to-indigo-300 bg-clip-text text-transparent">AI-Generated Visuals</h3>
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 leading-relaxed">Automatically creates stunning images that match your narrative text with advanced AI technology</p>
           </div>
 
-          <div className="glass p-8 rounded-2xl shadow-soft hover:shadow-soft-lg transition-all duration-300 hover:-translate-y-1 transform">
-            <div className="w-16 h-16 bg-gradient-to-br from-violet-500/20 to-violet-500/10 dark:from-violet-500/30 dark:to-violet-500/10 rounded-xl flex items-center justify-center mb-6 shadow-sm">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-violet-600 dark:text-violet-400" viewBox="0 0 20 20" fill="currentColor">
+          <div className="glass p-5 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl shadow-soft hover:shadow-soft-lg transition-all duration-300 hover:-translate-y-1 transform">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-gradient-to-br from-violet-500/20 to-violet-500/10 dark:from-violet-500/30 dark:to-violet-500/10 rounded-xl flex items-center justify-center mb-4 sm:mb-5 md:mb-6 shadow-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-violet-600 dark:text-violet-400" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.984 5.984 0 01-1.757 4.243 1 1 0 01-1.415-1.415A3.984 3.984 0 0013 10a3.983 3.983 0 00-1.172-2.828 1 1 0 010-1.415z" clipRule="evenodd" />
               </svg>
             </div>
-            <h3 className="text-xl font-bold mb-3 bg-gradient-to-r from-violet-600 to-violet-500 dark:from-violet-400 dark:to-violet-300 bg-clip-text text-transparent">Natural Narration</h3>
-            <p className="text-gray-600 dark:text-gray-300 leading-relaxed">Convert your text to lifelike speech with multiple voice options and natural-sounding inflections</p>
+            <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3 bg-gradient-to-r from-violet-600 to-violet-500 dark:from-violet-400 dark:to-violet-300 bg-clip-text text-transparent">Natural Narration</h3>
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 leading-relaxed">Convert your text to lifelike speech with multiple voice options and natural-sounding inflections</p>
           </div>
 
-          <div className="glass p-8 rounded-2xl shadow-soft hover:shadow-soft-lg transition-all duration-300 hover:-translate-y-1 transform">
-            <div className="w-16 h-16 bg-gradient-to-br from-fuchsia-500/20 to-fuchsia-500/10 dark:from-fuchsia-500/30 dark:to-fuchsia-500/10 rounded-xl flex items-center justify-center mb-6 shadow-sm">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-fuchsia-600 dark:text-fuchsia-400" viewBox="0 0 20 20" fill="currentColor">
+          <div className="glass p-5 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl shadow-soft hover:shadow-soft-lg transition-all duration-300 hover:-translate-y-1 transform sm:col-span-2 md:col-span-1">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-gradient-to-br from-fuchsia-500/20 to-fuchsia-500/10 dark:from-fuchsia-500/30 dark:to-fuchsia-500/10 rounded-xl flex items-center justify-center mb-4 sm:mb-5 md:mb-6 shadow-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-fuchsia-600 dark:text-fuchsia-400" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z" />
               </svg>
             </div>
-            <h3 className="text-xl font-bold mb-3 bg-gradient-to-r from-fuchsia-600 to-fuchsia-500 dark:from-fuchsia-400 dark:to-fuchsia-300 bg-clip-text text-transparent">Customizable Effects</h3>
-            <p className="text-gray-600 dark:text-gray-300 leading-relaxed">Choose from multiple animation styles and visual effects to create the perfect video for your needs</p>
+            <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3 bg-gradient-to-r from-fuchsia-600 to-fuchsia-500 dark:from-fuchsia-400 dark:to-fuchsia-300 bg-clip-text text-transparent">Customizable Effects</h3>
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 leading-relaxed">Choose from multiple animation styles and visual effects to create the perfect video for your needs</p>
           </div>
         </div>
 
@@ -204,7 +259,7 @@ export default function Home() {
       </main>
 
       {/* Modern footer with gradient accent and glassmorphism */}
-      <footer className="relative mt-20">
+      <footer className="relative mt-12 sm:mt-16 md:mt-20">
         {/* Gradient accent */}
         <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-indigo-600 via-violet-500 to-fuchsia-500 animate-gradient-shift bg-[length:200%_200%]"></div>
 
@@ -215,10 +270,10 @@ export default function Home() {
         </div>
 
         {/* Main footer content */}
-        <div className="glass pt-16 pb-10 px-4 transition-all relative z-10">
+        <div className="glass pt-10 sm:pt-12 md:pt-16 pb-8 sm:pb-10 px-3 sm:px-4 transition-all relative z-10">
           <div className="max-w-6xl mx-auto">
             {/* Top section with logo and links */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-10 mb-16">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-8 sm:gap-10 mb-10 sm:mb-16">
               {/* Logo and description */}
               <div className="md:col-span-4">
                 <div className="flex items-center space-x-3 mb-5">
@@ -298,18 +353,18 @@ export default function Home() {
             </div>
 
             {/* Bottom section with copyright and modern divider */}
-            <div className="pt-8 border-t border-gray-200/30 dark:border-gray-800/30">
+            <div className="pt-6 sm:pt-8 border-t border-gray-200/30 dark:border-gray-800/30">
               <div className="flex flex-col md:flex-row justify-between items-center">
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                   © {new Date().getFullYear()} NarrateVision. All rights reserved.
                 </p>
-                <div className="flex items-center mt-4 md:mt-0">
-                  <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-r from-indigo-500/10 to-violet-500/10 mr-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-indigo-500 dark:text-indigo-400" viewBox="0 0 20 20" fill="currentColor">
+                <div className="flex items-center mt-3 md:mt-0">
+                  <span className="inline-flex h-5 sm:h-6 w-5 sm:w-6 items-center justify-center rounded-full bg-gradient-to-r from-indigo-500/10 to-violet-500/10 mr-2 sm:mr-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-indigo-500 dark:text-indigo-400" viewBox="0 0 20 20" fill="currentColor">
                       <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
                     </svg>
                   </span>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                  <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                     Built with Next.js, Tailwind CSS, and FFmpeg
                   </p>
                 </div>
