@@ -13,14 +13,22 @@ const OPENAI_API_URL = 'https://api.openai.com/v1/images/generations';
 // Fallback API endpoint if needed
 const ZERO2LAUNCH_API_URL = 'https://api.zero2launch.com/download-image/data';
 
+// Check if we're running in Vercel environment
+const isVercelEnvironment = process.env.VERCEL === '1';
+
 export async function POST(request: NextRequest) {
   try {
-    // Ensure directories exist
-    [TMP_DIR, PUBLIC_IMAGES_DIR].forEach(dir => {
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
+    // Ensure TMP_DIR exists (this should be writable in Vercel)
+    if (!fs.existsSync(TMP_DIR)) {
+      fs.mkdirSync(TMP_DIR, { recursive: true });
+    }
+
+    // Only try to create PUBLIC_IMAGES_DIR if we're not in Vercel (it's read-only in Vercel)
+    if (!isVercelEnvironment) {
+      if (!fs.existsSync(PUBLIC_IMAGES_DIR)) {
+        fs.mkdirSync(PUBLIC_IMAGES_DIR, { recursive: true });
       }
-    });
+    }
 
     // Parse request body
     const body = await request.json();
@@ -75,14 +83,28 @@ export async function POST(request: NextRequest) {
                 throw new Error('Invalid JPEG data received from API');
               }
 
-              // Save image to both temporary and public directories
+              // Generate a unique filename for the image
               const imageFilename = `image-${uuidv4()}.jpg`;
               const imagePath = path.join(TMP_DIR, imageFilename);
-              const publicImagePath = path.join(PUBLIC_IMAGES_DIR, imageFilename);
 
-              // Write to both locations
+              // Write to the temporary directory (this should work in Vercel)
               fs.writeFileSync(imagePath, imageBuffer);
-              fs.writeFileSync(publicImagePath, imageBuffer);
+
+              // Variables to store paths and URLs
+              let publicImagePath = '';
+              let imageUrl = '';
+
+              if (!isVercelEnvironment) {
+                // In non-Vercel environments, also save to public directory
+                publicImagePath = path.join(PUBLIC_IMAGES_DIR, imageFilename);
+                fs.writeFileSync(publicImagePath, imageBuffer);
+
+                // Public URL for the image in non-Vercel environments
+                imageUrl = `/media/images/${imageFilename}`;
+              } else {
+                // For Vercel, we'll use the API route to serve the file from the temporary directory
+                imageUrl = `/api/images/${imageFilename}`;
+              }
 
               // Verify the file was written correctly
               if (!fs.existsSync(imagePath) || fs.statSync(imagePath).size === 0) {
@@ -91,8 +113,6 @@ export async function POST(request: NextRequest) {
 
               console.log(`Successfully generated image ${index + 1} from OpenAI API (${imageBuffer.length} bytes)`);
 
-              // Public URL for the image
-              const imageUrl = `/media/images/${imageFilename}`;
 
               return {
                 success: true,
@@ -134,16 +154,28 @@ export async function POST(request: NextRequest) {
             ]);
           }
 
-          // Save placeholder image
+          // Generate a unique filename for the placeholder image
           const imageFilename = `placeholder-${uuidv4()}.jpg`;
           const imagePath = path.join(TMP_DIR, imageFilename);
-          const publicImagePath = path.join(PUBLIC_IMAGES_DIR, imageFilename);
 
+          // Write to the temporary directory (this should work in Vercel)
           fs.writeFileSync(imagePath, imageBuffer);
-          fs.writeFileSync(publicImagePath, imageBuffer);
 
-          // Public URL for the placeholder image
-          const imageUrl = `/media/images/${imageFilename}`;
+          // Variables to store paths and URLs
+          let publicImagePath = '';
+          let imageUrl = '';
+
+          if (!isVercelEnvironment) {
+            // In non-Vercel environments, also save to public directory
+            publicImagePath = path.join(PUBLIC_IMAGES_DIR, imageFilename);
+            fs.writeFileSync(publicImagePath, imageBuffer);
+
+            // Public URL for the image in non-Vercel environments
+            imageUrl = `/media/images/${imageFilename}`;
+          } else {
+            // For Vercel, we'll use the API route to serve the file from the temporary directory
+            imageUrl = `/api/images/${imageFilename}`;
+          }
 
           return {
             success: false,
