@@ -103,61 +103,64 @@ export default function TextToImageForm() {
 
   return (
     <div className="w-full mx-auto">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Text to Image Generator</h2>
-        <p className="text-gray-600 dark:text-gray-400">
+      <div className="mb-8">
+        <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-violet-500 dark:from-indigo-400 dark:to-violet-400 bg-clip-text text-transparent mb-3">Text to Image Generator</h2>
+        <p className="text-gray-600 dark:text-gray-400 text-lg">
           Enter a text prompt to generate an AI image
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-8">
         {/* Text Prompt Input */}
         <div>
-          <label htmlFor="prompt" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label htmlFor="prompt" className="form-label text-base mb-2">
             Text Prompt
           </label>
           <div className="relative">
             <textarea
               id="prompt"
-              rows={3}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 pr-12"
+              rows={4}
+              className="form-input text-base pr-14"
               placeholder="Describe the image you want to generate..."
               value={formState.prompt}
               onChange={(e) => setFormState(prev => ({ ...prev, prompt: e.target.value }))}
               disabled={formState.isGeneratingImage}
             />
-            <div className="absolute right-2 bottom-2">
+            <div className="absolute right-3 bottom-3">
               <MicrophoneButton
                 onTranscriptChange={(text) => setFormState(prev => ({ ...prev, prompt: text }))}
                 appendToExisting={true}
                 existingText={formState.prompt}
-                className="h-10 w-10"
+                className="h-11 w-11"
               />
             </div>
           </div>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 text-indigo-500 dark:text-indigo-400" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+            </svg>
             Click the microphone icon to use speech-to-text
           </p>
         </div>
 
         {/* Image Style Selection */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label className="form-label text-base mb-3">
             Image Style
           </label>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {IMAGE_STYLE_OPTIONS.map((style) => (
               <div
                 key={style.id}
-                className={`border rounded-lg p-3 cursor-pointer transition-colors ${
+                className={`border rounded-xl p-4 cursor-pointer transition-all duration-200 hover:shadow-md ${
                   formState.selectedImageStyle === style.id
-                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                    : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                    ? 'border-indigo-500 bg-indigo-50/50 dark:bg-indigo-900/20 shadow-md'
+                    : 'border-gray-200 dark:border-gray-700 hover:border-indigo-200 dark:hover:border-indigo-700'
                 }`}
                 onClick={() => setFormState(prev => ({ ...prev, selectedImageStyle: style.id }))}
               >
-                <div className="font-medium text-gray-900 dark:text-white">{style.name}</div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">{style.description}</div>
+                <div className="font-medium text-gray-900 dark:text-white mb-1">{style.name}</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">{style.description}</div>
               </div>
             ))}
           </div>
@@ -165,22 +168,24 @@ export default function TextToImageForm() {
 
         {/* Results Section - Only show when complete */}
         {formState.progress === 'complete' && (
-          <div className="mt-8 border dark:border-gray-700 rounded-xl overflow-hidden bg-white dark:bg-gray-800 shadow-lg">
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4">
-              <h3 className="text-lg font-medium text-white flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+          <div className="mt-8 card border-0 overflow-hidden">
+            <div className="bg-gradient-to-r from-indigo-600 to-violet-600 px-6 py-5 flex items-center">
+              <div className="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center mr-3">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
+              </div>
+              <h3 className="text-xl font-bold text-white">
                 Your Image is Ready!
               </h3>
             </div>
 
-            <div className="p-6">
-              <div className="grid grid-cols-1 gap-6">
+            <div className="p-6 md:p-8">
+              <div className="grid grid-cols-1 gap-8">
                 {/* Image Preview */}
-                <div className="space-y-4">
-                  <h4 className="font-medium text-gray-900 dark:text-gray-100">Generated Image</h4>
-                  <div className="relative aspect-square max-h-[512px] bg-black rounded-lg overflow-hidden shadow-inner">
+                <div className="space-y-5">
+                  <h4 className="text-lg font-bold bg-gradient-to-r from-indigo-600 to-violet-500 dark:from-indigo-400 dark:to-violet-400 bg-clip-text text-transparent">Generated Image</h4>
+                  <div className="relative aspect-square max-h-[512px] bg-black rounded-xl overflow-hidden shadow-inner border border-gray-800/50">
                     {formState.imageUrl && (
                       <img
                         src={formState.imageUrl}
@@ -196,11 +201,11 @@ export default function TextToImageForm() {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex flex-col space-y-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <a
                     href={formState.imageUrl || '#'}
                     download="narratevision-image.jpg"
-                    className="btn-primary py-2 text-center flex items-center justify-center"
+                    className="btn-primary py-3 text-center flex items-center justify-center"
                     disabled={!formState.imageUrl}
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
@@ -212,7 +217,7 @@ export default function TextToImageForm() {
                   <button
                     type="button"
                     onClick={handleReset}
-                    className="btn-secondary py-2"
+                    className="btn-secondary py-3"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                       <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
@@ -227,16 +232,25 @@ export default function TextToImageForm() {
 
         {/* Progress Indicator */}
         {formState.progress === 'generating-image' && (
-          <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 flex items-center">
-            <div className="mr-4">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 dark:border-blue-400"></div>
+          <div className="glass rounded-xl p-6 flex flex-col sm:flex-row items-center">
+            <div className="mb-4 sm:mb-0 sm:mr-6">
+              <div className="relative">
+                <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-indigo-600 dark:border-indigo-400"></div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="h-8 w-8 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-indigo-600 dark:text-indigo-400" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div>
-              <h3 className="font-medium text-blue-800 dark:text-blue-300">
+            <div className="text-center sm:text-left">
+              <h3 className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-violet-500 dark:from-indigo-400 dark:to-violet-400 bg-clip-text text-transparent mb-2">
                 Creating your image...
               </h3>
-              <p className="text-sm text-blue-600 dark:text-blue-400">
-                AI is generating an image based on your text
+              <p className="text-gray-600 dark:text-gray-300">
+                AI is generating an image based on your text prompt
               </p>
             </div>
           </div>
@@ -244,30 +258,33 @@ export default function TextToImageForm() {
 
         {/* Error Message */}
         {formState.progress === 'error' && (
-          <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-4 mb-6">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                </svg>
+          <div className="glass border-2 border-red-200 dark:border-red-800/30 rounded-xl p-6 mb-6">
+            <div className="flex flex-col sm:flex-row items-center sm:items-start">
+              <div className="flex-shrink-0 mb-4 sm:mb-0">
+                <div className="h-12 w-12 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                  <svg className="h-6 w-6 text-red-500 dark:text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                </div>
               </div>
-              <div className="ml-3">
-                <h3 className="text-sm font-medium text-red-800 dark:text-red-300">
-                  Error creating your image
+              <div className="ml-0 sm:ml-5 text-center sm:text-left">
+                <h3 className="text-lg font-bold text-red-600 dark:text-red-400 mb-2">
+                  Error Creating Your Image
                 </h3>
-                <div className="mt-2 text-sm text-red-700 dark:text-red-400">
+                <div className="text-gray-600 dark:text-gray-300 mb-5">
                   <p>{formState.error || 'Something went wrong. Please try again.'}</p>
                 </div>
-                <div className="mt-4">
-                  <div className="-mx-2 -my-1.5 flex">
-                    <button
-                      type="button"
-                      onClick={() => setFormState(prev => ({ ...prev, error: null, progress: 'idle' }))}
-                      className="bg-red-50 dark:bg-red-900/30 px-2 py-1.5 rounded-md text-sm font-medium text-red-800 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-900/50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                    >
-                      Try again
-                    </button>
-                  </div>
+                <div className="flex justify-center sm:justify-start">
+                  <button
+                    type="button"
+                    onClick={() => setFormState(prev => ({ ...prev, error: null, progress: 'idle' }))}
+                    className="btn-primary py-2 px-4"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
+                    </svg>
+                    Try Again
+                  </button>
                 </div>
               </div>
             </div>
@@ -276,16 +293,28 @@ export default function TextToImageForm() {
 
         {/* Submit Button */}
         {(formState.progress === 'idle' || formState.progress === 'error') && (
-          <div className="flex justify-end">
+          <div className="flex justify-center sm:justify-end">
             <button
               type="submit"
               disabled={!formState.prompt.trim() || formState.isGeneratingImage}
-              className="btn-primary py-3 px-6"
+              className="btn-primary py-3 px-6 text-base w-full sm:w-auto"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
-              </svg>
-              Generate Image
+              {formState.isGeneratingImage ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Generating Image...
+                </>
+              ) : (
+                <>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+                  </svg>
+                  Generate Image
+                </>
+              )}
             </button>
           </div>
         )}

@@ -64,19 +64,22 @@ const MicrophoneButton: React.FC<MicrophoneButtonProps> = ({
     <button
       type="button"
       onClick={handleMicrophoneClick}
-      className={`p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
+      className={`p-2.5 rounded-full shadow-sm ${
         isListening
-          ? 'bg-red-500 text-white animate-pulse'
-          : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
-      } ${className}`}
+          ? 'bg-gradient-to-r from-red-500 to-red-600 text-white animate-pulse shadow-md'
+          : 'bg-gradient-to-r from-indigo-500 to-violet-500 text-white hover:from-indigo-600 hover:to-violet-600 hover:shadow-md'
+      } transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 transform hover:-translate-y-0.5 ${className}`}
       title={isListening ? 'Stop recording' : 'Start speech recognition'}
       aria-label={isListening ? 'Stop recording' : 'Start speech recognition'}
     >
       {isListening ? (
-        // Recording icon (stop)
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V8a1 1 0 00-1-1H8z" clipRule="evenodd" />
-        </svg>
+        // Recording icon (stop) with animation
+        <div className="relative">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V8a1 1 0 00-1-1H8z" clipRule="evenodd" />
+          </svg>
+          <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-red-300 animate-ping"></span>
+        </div>
       ) : (
         // Microphone icon (start)
         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
