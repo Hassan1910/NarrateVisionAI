@@ -366,19 +366,33 @@ export default function ImageToVideoForm() {
         const videoData = await videoResponse.json();
         console.log('Video generation response:', videoData);
 
+        // Log detailed information about the response for debugging
+        console.log('Video URL:', videoData.videoUrl);
+        console.log('Image URL:', videoData.imageUrl);
+        console.log('Image URLs:', videoData.imageUrls);
+        console.log('Is Vercel Environment:', videoData.isVercelEnvironment);
+
+        // Ensure we have valid image URLs
+        const imageUrl = videoData.imageUrl || prev.imageUrl;
+        let imageUrls = videoData.imageUrls || prev.imageUrls;
+
+        // If we have no image URLs but have a single image URL, use that
+        if ((!imageUrls || imageUrls.length === 0) && imageUrl) {
+          imageUrls = [imageUrl];
+        }
+
         // Update state with video URL and image URLs from video generation
         setFormState(prev => ({
           ...prev,
           isGeneratingVideo: false,
           videoUrl: videoData.videoUrl,
-          // Use the image URL from video generation if available
-          imageUrl: videoData.imageUrl || prev.imageUrl,
-          // Update image URLs if we got them from the video generation
-          imageUrls: videoData.imageUrls || prev.imageUrls,
+          imageUrl: imageUrl,
+          imageUrls: imageUrls,
           progress: 'complete'
         }));
 
-        toast.success('Video generated successfully!');
+        // Show success message with details about the generated content
+        toast.success(`Video generated successfully! ${imageUrls.length} image(s) created.`);
       } catch (error: any) {
         console.error('Error:', error);
         setFormState(prev => ({
@@ -633,6 +647,13 @@ export default function ImageToVideoForm() {
                   {/* Generated Images */}
                   <div>
                     <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-3">Generated Images</h4>
+                    {/* Debug info - will be removed in production */}
+                    {process.env.NODE_ENV === 'development' && (
+                      <div className="mb-2 text-xs text-gray-500 dark:text-gray-400">
+                        <p>Image URLs: {formState.imageUrls.length > 0 ? formState.imageUrls.join(', ') : 'None'}</p>
+                        <p>Single Image URL: {formState.imageUrl || 'None'}</p>
+                      </div>
+                    )}
                     <div className="grid grid-cols-2 gap-3">
                       {formState.imageUrls.length > 0 ? (
                         formState.imageUrls.map((url, index) => (
@@ -641,6 +662,11 @@ export default function ImageToVideoForm() {
                               src={url}
                               alt={`Generated image ${index + 1}`}
                               className="w-full h-full object-cover"
+                              onError={(e) => {
+                                console.error(`Error loading image ${index} from URL: ${url}`);
+                                // Set a fallback image or placeholder
+                                e.currentTarget.src = '/placeholder.svg';
+                              }}
                             />
                           </div>
                         ))
@@ -651,6 +677,11 @@ export default function ImageToVideoForm() {
                               src={formState.imageUrl}
                               alt="Generated image"
                               className="w-full h-full object-cover"
+                              onError={(e) => {
+                                console.error(`Error loading image from URL: ${formState.imageUrl}`);
+                                // Set a fallback image or placeholder
+                                e.currentTarget.src = '/placeholder.svg';
+                              }}
                             />
                           </div>
                         )

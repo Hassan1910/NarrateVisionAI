@@ -19,15 +19,15 @@ const ImageSequence: React.FC<ImageSequenceProps> = ({
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [audioDuration, setAudioDuration] = useState(0);
-  
+
   const audioRef = useRef<HTMLAudioElement>(null);
   const animationRef = useRef<number | null>(null);
-  
+
   // Calculate time per image
-  const timePerImage = audioDuration > 0 
-    ? audioDuration / images.length 
+  const timePerImage = audioDuration > 0
+    ? audioDuration / images.length
     : duration / images.length;
-  
+
   // Handle audio loading
   useEffect(() => {
     if (audioRef.current) {
@@ -36,9 +36,9 @@ const ImageSequence: React.FC<ImageSequenceProps> = ({
           setAudioDuration(audioRef.current.duration);
         }
       };
-      
+
       audioRef.current.addEventListener('loadedmetadata', handleLoadedMetadata);
-      
+
       return () => {
         if (audioRef.current) {
           audioRef.current.removeEventListener('loadedmetadata', handleLoadedMetadata);
@@ -46,7 +46,7 @@ const ImageSequence: React.FC<ImageSequenceProps> = ({
       };
     }
   }, [audioUrl]);
-  
+
   // Handle play/pause
   useEffect(() => {
     if (audioRef.current) {
@@ -55,13 +55,13 @@ const ImageSequence: React.FC<ImageSequenceProps> = ({
           console.error('Error playing audio:', err);
           setIsPlaying(false);
         });
-        
+
         // Start animation loop
         const animate = () => {
           if (audioRef.current) {
             const currentTime = audioRef.current.currentTime;
             setCurrentTime(currentTime);
-            
+
             // Calculate which image to show based on current time
             if (audioDuration > 0) {
               const newIndex = Math.min(
@@ -71,14 +71,14 @@ const ImageSequence: React.FC<ImageSequenceProps> = ({
               setCurrentImageIndex(newIndex);
             }
           }
-          
+
           animationRef.current = requestAnimationFrame(animate);
         };
-        
+
         animationRef.current = requestAnimationFrame(animate);
       } else {
         audioRef.current.pause();
-        
+
         // Stop animation loop
         if (animationRef.current) {
           cancelAnimationFrame(animationRef.current);
@@ -86,29 +86,29 @@ const ImageSequence: React.FC<ImageSequenceProps> = ({
         }
       }
     }
-    
+
     return () => {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }
     };
   }, [isPlaying, images.length, timePerImage, audioDuration]);
-  
+
   // Toggle play/pause
   const togglePlayPause = () => {
     setIsPlaying(!isPlaying);
   };
-  
+
   // Format time (seconds to MM:SS)
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
     return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
   };
-  
+
   // Calculate progress percentage
   const progressPercentage = audioDuration > 0 ? (currentTime / audioDuration) * 100 : 0;
-  
+
   return (
     <div className={`relative ${className}`}>
       {/* CSS for transitions */}
@@ -121,7 +121,7 @@ const ImageSequence: React.FC<ImageSequenceProps> = ({
           border-radius: 0.375rem;
           background-color: black;
         }
-        
+
         .sequence-image {
           position: absolute;
           top: 0;
@@ -132,11 +132,11 @@ const ImageSequence: React.FC<ImageSequenceProps> = ({
           opacity: 0;
           transition: opacity 0.8s ease-in-out;
         }
-        
+
         .sequence-image.active {
           opacity: 1;
         }
-        
+
         .progress-bar {
           height: 4px;
           background-color: rgba(255, 255, 255, 0.3);
@@ -146,13 +146,13 @@ const ImageSequence: React.FC<ImageSequenceProps> = ({
           right: 0;
           z-index: 10;
         }
-        
+
         .progress-fill {
           height: 100%;
           background-color: #3b82f6;
           transition: width 0.1s linear;
         }
-        
+
         .text-overlay {
           position: absolute;
           bottom: 2rem;
@@ -166,13 +166,13 @@ const ImageSequence: React.FC<ImageSequenceProps> = ({
           z-index: 5;
           animation: fadeIn 0.5s ease-in-out;
         }
-        
+
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(10px); }
           to { opacity: 1; transform: translateY(0); }
         }
       `}</style>
-      
+
       {/* Video container */}
       <div className="relative aspect-video">
         <div className="image-container">
@@ -183,25 +183,30 @@ const ImageSequence: React.FC<ImageSequenceProps> = ({
               src={src}
               alt={`Sequence image ${index + 1}`}
               className={`sequence-image ${index === currentImageIndex ? 'active' : ''}`}
+              onError={(e) => {
+                console.error(`Error loading sequence image ${index} from URL: ${src}`);
+                // Set a fallback image or placeholder
+                e.currentTarget.src = '/placeholder.svg';
+              }}
             />
           ))}
-          
+
           {/* Text overlay */}
           {textSegments[currentImageIndex] && (
             <div className="text-overlay">
               <p>{textSegments[currentImageIndex]}</p>
             </div>
           )}
-          
+
           {/* Progress bar */}
           <div className="progress-bar">
-            <div 
-              className="progress-fill" 
+            <div
+              className="progress-fill"
               style={{ width: `${progressPercentage}%` }}
             ></div>
           </div>
         </div>
-        
+
         {/* Play/Pause button */}
         <button
           onClick={togglePlayPause}
@@ -218,13 +223,13 @@ const ImageSequence: React.FC<ImageSequenceProps> = ({
             </svg>
           )}
         </button>
-        
+
         {/* Time display */}
         <div className="absolute bottom-6 right-4 bg-black bg-opacity-50 px-2 py-1 rounded text-white text-xs z-10">
           {formatTime(currentTime)} / {formatTime(audioDuration)}
         </div>
       </div>
-      
+
       {/* Hidden audio element */}
       {audioUrl && (
         <audio
@@ -234,11 +239,11 @@ const ImageSequence: React.FC<ImageSequenceProps> = ({
           onEnded={() => setIsPlaying(false)}
         />
       )}
-      
+
       {/* Image thumbnails */}
       <div className="mt-4 flex overflow-x-auto space-x-2 pb-2">
         {images.map((src, index) => (
-          <div 
+          <div
             key={index}
             className={`flex-shrink-0 w-16 h-16 cursor-pointer border-2 ${
               index === currentImageIndex ? 'border-blue-500' : 'border-transparent'
@@ -250,10 +255,14 @@ const ImageSequence: React.FC<ImageSequenceProps> = ({
               }
             }}
           >
-            <img 
-              src={src} 
+            <img
+              src={src}
               alt={`Thumbnail ${index + 1}`}
               className="w-full h-full object-cover"
+              onError={(e) => {
+                console.error(`Error loading thumbnail ${index} from URL: ${src}`);
+                e.currentTarget.src = '/placeholder.svg';
+              }}
             />
           </div>
         ))}
