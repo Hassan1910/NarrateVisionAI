@@ -1,8 +1,9 @@
+/** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    './src/pages/**/*.{js,ts,jsx,tsx}',
-    './src/components/**/*.{js,ts,jsx,tsx}',
-    './src/app/**/*.{js,ts,jsx,tsx}',
+    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   darkMode: 'class',
   theme: {
@@ -25,15 +26,6 @@ module.exports = {
         'panLeft': 'panLeft 15s ease-in-out infinite',
         'panRight': 'panRight 15s ease-in-out infinite',
       },
-    },
-  },
-  variants: {
-    extend: {
-      opacity: ['disabled'],
-      cursor: ['disabled'],
-      backgroundColor: ['dark', 'hover', 'disabled'],
-      textColor: ['dark', 'disabled'],
-      borderColor: ['dark', 'focus'],
     },
   },
   plugins: [],
