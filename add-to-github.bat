@@ -29,9 +29,9 @@ if %ERRORLEVEL% neq 0 (
     echo.
     set /p GITHUB_USERNAME="Enter your GitHub username: "
     set /p REPO_NAME="Enter repository name [narratevision]: "
-    
+
     if "%REPO_NAME%"=="" set REPO_NAME=narratevision
-    
+
     echo.
     echo Setting up GitHub repository...
     echo.
@@ -41,21 +41,21 @@ if %ERRORLEVEL% neq 0 (
     echo 4. Come back here when done
     echo.
     pause
-    
+
     echo Adding GitHub remote...
     git remote add origin https://github.com/%GITHUB_USERNAME%/%REPO_NAME%.git
-    
+
     echo.
     echo Pushing to GitHub...
-    git push -u origin master
+    git push -u origin main
 ) else (
     echo GitHub remote already configured.
-    
+
     echo.
     echo Committing changes...
     git add .
     git commit -m "Update NarrateVision for Vercel deployment"
-    
+
     echo Pushing to GitHub...
     git push
 )
