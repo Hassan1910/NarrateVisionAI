@@ -2,6 +2,8 @@
   "framework": "nextjs",
   "outputDirectory": ".next",
   "regions": ["iad1"],
+  "buildCommand": "npm run build",
+  "installCommand": "npm install",
   "env": {
     "OPENAI_API_KEY": "d29c92df23849cc02e77e90dd8ea2082be60ea5b0d0d7bc308d2b787e9799e45",
     "API_PROVIDER": "openai",
