@@ -185,6 +185,13 @@ export default function ImageToVideoForm() {
       return;
     }
 
+    // Prevent using sequence effect for now
+    if (formState.selectedVideoEffect === 'sequence') {
+      toast.info('Image Sequence feature is coming soon! Please try another video effect.');
+      setFormState(prev => ({ ...prev, selectedVideoEffect: 'simple' }));
+      return;
+    }
+
     try {
       // Step 1: Generate images from narration segments
       setFormState(prev => ({
@@ -566,9 +573,14 @@ export default function ImageToVideoForm() {
                   ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30'
                   : 'border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600'
               }`}
-              onClick={() => formState.progress === 'idle' && setFormState(prev => ({ ...prev, selectedVideoEffect: 'sequence' }))}
+              onClick={() => {
+                if (formState.progress === 'idle') {
+                  toast.info('Image Sequence feature is coming soon! Please try another video effect for now.');
+                  setFormState(prev => ({ ...prev, selectedVideoEffect: 'simple' }));
+                }
+              }}
             >
-              <div className="font-medium mb-1">Image Sequence</div>
+              <div className="font-medium mb-1">Image Sequence <span className="text-xs font-normal text-amber-600 dark:text-amber-400 ml-1">(Coming Soon)</span></div>
               <div className="text-xs text-gray-500 dark:text-gray-400">Multiple images with transitions</div>
             </div>
           </div>
