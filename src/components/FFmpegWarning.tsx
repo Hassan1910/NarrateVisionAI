@@ -1,8 +1,24 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 export default function FFmpegWarning() {
   const [isOpen, setIsOpen] = useState(true);
+  const [isVercel, setIsVercel] = useState(false);
+
+  useEffect(() => {
+    // Check if we're running in Vercel environment
+    const checkEnvironment = async () => {
+      try {
+        const response = await fetch('/api/check-ffmpeg');
+        const data = await response.json();
+        setIsVercel(data.environment === 'vercel');
+      } catch (error) {
+        console.error('Error checking environment:', error);
+      }
+    };
+
+    checkEnvironment();
+  }, []);
 
   if (!isOpen) return null;
 
@@ -15,17 +31,38 @@ export default function FFmpegWarning() {
           </svg>
         </div>
         <div className="ml-3">
-          <p className="text-sm text-yellow-700">
-            <strong>FFmpeg not detected.</strong> For full video generation capabilities, please install FFmpeg.
-          </p>
-          <div className="mt-2">
-            <Link
-              href="/ffmpeg-guide"
-              className="text-sm font-medium text-yellow-700 hover:text-yellow-600 underline"
-            >
-              View Installation Guide
-            </Link>
-          </div>
+          {isVercel ? (
+            <>
+              <p className="text-sm text-yellow-700">
+                <strong>Note about FFmpeg in Vercel:</strong> This application is running on Vercel, which doesn't support FFmpeg natively. However, we've implemented fallback mechanisms to ensure video generation still works.
+              </p>
+              <div className="mt-2">
+                <p className="text-sm text-yellow-700">
+                  For the full experience with all video features, you can run this application locally with FFmpeg installed.
+                </p>
+                <Link
+                  href="/ffmpeg-guide"
+                  className="text-sm font-medium text-yellow-700 hover:text-yellow-600 underline mt-1 inline-block"
+                >
+                  View FFmpeg Guide
+                </Link>
+              </div>
+            </>
+          ) : (
+            <>
+              <p className="text-sm text-yellow-700">
+                <strong>FFmpeg not detected.</strong> For full video generation capabilities, please install FFmpeg.
+              </p>
+              <div className="mt-2">
+                <Link
+                  href="/ffmpeg-guide"
+                  className="text-sm font-medium text-yellow-700 hover:text-yellow-600 underline"
+                >
+                  View Installation Guide
+                </Link>
+              </div>
+            </>
+          )}
         </div>
         <div className="ml-auto pl-3">
           <div className="-mx-1.5 -my-1.5">

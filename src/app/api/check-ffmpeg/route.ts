@@ -20,30 +20,34 @@ const isFFmpegInstalled = async (): Promise<boolean> => {
 
 export async function GET(request: NextRequest) {
   try {
+    // Check if we're running in Vercel production environment
+    const isVercelProduction = process.env.VERCEL === '1';
+
     // Check if the environment variable is set to show the warning
     const showWarningEnv = process.env.SHOW_FFMPEG_WARNING === 'true';
-    
-    // Only perform the check if the warning is enabled
-    if (showWarningEnv) {
-      // Check if FFmpeg is installed
-      const ffmpegInstalled = await isFFmpegInstalled();
-      
-      // Return the result
+
+    // Skip the check if we're in Vercel production or if the warning is disabled
+    if (isVercelProduction || !showWarningEnv) {
       return NextResponse.json({
-        showWarning: !ffmpegInstalled,
-        ffmpegInstalled
+        showWarning: false,
+        ffmpegInstalled: true,
+        environment: isVercelProduction ? 'vercel' : 'development'
       });
     }
-    
-    // If warning is disabled, don't show it
+
+    // Only perform the check in development environment
+    const ffmpegInstalled = await isFFmpegInstalled();
+
+    // Return the result
     return NextResponse.json({
-      showWarning: false,
-      ffmpegInstalled: true
+      showWarning: !ffmpegInstalled,
+      ffmpegInstalled,
+      environment: 'development'
     });
-    
+
   } catch (error: any) {
     console.error('Error checking FFmpeg status:', error);
-    
+
     // In case of error, don't show the warning
     return NextResponse.json({
       showWarning: false,
