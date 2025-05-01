@@ -49,6 +49,9 @@ export default function ApiReferencePage() {
               <Link href="/" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white transition-colors">
                 Home
               </Link>
+              <Link href="/text-to-image" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white transition-colors">
+                Text to Image
+              </Link>
               <Link href="/documentation" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white transition-colors">
                 Documentation
               </Link>
@@ -106,6 +109,9 @@ export default function ApiReferencePage() {
             </li>
             <li>
               <a href="#check-ffmpeg" className="text-blue-600 dark:text-blue-400 hover:underline">Check FFmpeg</a>
+            </li>
+            <li>
+              <a href="#text-to-image" className="text-blue-600 dark:text-blue-400 hover:underline">Text to Image</a>
             </li>
           </ul>
         </div>
@@ -365,6 +371,78 @@ export default function ApiReferencePage() {
           </div>
         </div>
 
+        {/* Text to Image API */}
+        <div id="text-to-image" className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-8 transition-colors border border-gray-100 dark:border-gray-700">
+          <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">Text to Image</h2>
+          <p className="text-gray-600 dark:text-gray-300 mb-4">
+            Generates an image from a text prompt using AI.
+          </p>
+
+          <div className="mb-4">
+            <h3 className="text-lg font-medium text-gray-700 dark:text-gray-200 mb-2">Endpoint</h3>
+            <div className="bg-gray-100 dark:bg-gray-900 p-2 rounded-md font-mono text-sm">
+              POST /api/generate-image
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <h3 className="text-lg font-medium text-gray-700 dark:text-gray-200 mb-2">Description</h3>
+            <p className="text-gray-600 dark:text-gray-300">
+              Generates an AI image based on a text prompt. You can specify different styles for the generated image.
+            </p>
+          </div>
+
+          <div className="mb-4">
+            <h3 className="text-lg font-medium text-gray-700 dark:text-gray-200 mb-2">Request Body</h3>
+            <div className="bg-gray-100 dark:bg-gray-900 p-3 rounded-md">
+              <pre className="text-sm text-gray-600 dark:text-gray-300 whitespace-pre-wrap">
+{`{
+  "prompt": string,
+  "style": string (optional, default: "vivid")
+}`}
+              </pre>
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <h3 className="text-lg font-medium text-gray-700 dark:text-gray-200 mb-2">Response</h3>
+            <div className="bg-gray-100 dark:bg-gray-900 p-3 rounded-md">
+              <pre className="text-sm text-gray-600 dark:text-gray-300 whitespace-pre-wrap">
+{`{
+  "success": boolean,
+  "imageUrl": string,
+  "error": string | null
+}`}
+              </pre>
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <h3 className="text-lg font-medium text-gray-700 dark:text-gray-200 mb-2">Example Request</h3>
+            <div className="bg-gray-100 dark:bg-gray-900 p-3 rounded-md">
+              <pre className="text-sm text-gray-600 dark:text-gray-300 whitespace-pre-wrap">
+{`{
+  "prompt": "A beautiful mountain landscape with a lake at sunset",
+  "style": "natural"
+}`}
+              </pre>
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <h3 className="text-lg font-medium text-gray-700 dark:text-gray-200 mb-2">Example Response</h3>
+            <div className="bg-gray-100 dark:bg-gray-900 p-3 rounded-md">
+              <pre className="text-sm text-gray-600 dark:text-gray-300 whitespace-pre-wrap">
+{`{
+  "success": true,
+  "imageUrl": "/api/images/image-a1b2c3d4.jpg",
+  "error": null
+}`}
+              </pre>
+            </div>
+          </div>
+        </div>
+
         <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 p-4 mb-8">
           <div className="flex">
             <div className="flex-shrink-0">
@@ -419,6 +497,7 @@ export default function ApiReferencePage() {
               <div className="md:col-span-2">
                 <h3 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider mb-4">Resources</h3>
                 <ul className="space-y-3">
+                  <li><Link href="/text-to-image" className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-sm">Text to Image</Link></li>
                   <li><Link href="/ffmpeg-guide" className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-sm">FFmpeg Guide</Link></li>
                   <li><Link href="/documentation" className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-sm">Documentation</Link></li>
                   <li><Link href="/api-reference" className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-sm">API Reference</Link></li>
